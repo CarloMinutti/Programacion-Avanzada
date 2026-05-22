@@ -99,15 +99,6 @@ section{position:relative;padding:7rem 2rem;}
 /* ─ RECURSOS ─ */
 .recursos{background:var(--paper);}
 .recursos h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.5rem);font-weight:500;color:var(--ink);margin-bottom:2rem;letter-spacing:-.02em;}
-.rec-nav{display:flex;gap:.4rem;margin-bottom:1.6rem;padding-bottom:1.2rem;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center;}
-.rec-nav-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(42,29,20,.4);margin-right:1rem;}
-.rec-tab{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;padding:.5rem 1rem;border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;transition:all .25s;}
-.rec-tab:hover{border-color:var(--ochre);color:var(--ink);}
-.rec-tab.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
-.rec-tab .rec-tab-count{opacity:.5;margin-left:.4rem;font-size:.6rem;}
-.rec-panel{display:none;}
-.rec-panel.active{display:block;animation:recFade .4s ease;}
-@keyframes recFade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 .rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
 .rec-card{background:var(--paper-deep);border:1px solid rgba(42,29,20,.22);padding:1.5rem;transition:border-color .3s;}
 .rec-card:hover{border-color:var(--ochre);}
@@ -300,6 +291,11 @@ footer{border-top-color:var(--line)!important;}
 .stats-bar{background:var(--paper-deep)!important;border-color:var(--line)!important;}
 .stat-n,.sn2{color:var(--blood)!important;}
 .stat-l,.sl2{color:var(--ink-soft)!important;}
+.rec-subhead{font-family:'Cormorant Garamond',serif;font-size:clamp(1.5rem,2.6vw,2.1rem);font-weight:500;color:var(--ink);margin:3.5rem 0 .6rem;letter-spacing:-.01em;}
+.rec-subhead em{font-style:italic;color:var(--blood);}
+.rec-subhead-note{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--ink-soft);margin-bottom:1.8rem;}
+.rec-label.free{color:var(--olive)!important;}
+.rec-label.paid{color:var(--blood)!important;}
 </style>
 </head>
 <body>
@@ -376,56 +372,65 @@ footer{border-top-color:var(--line)!important;}
 <section class="recursos">
   <div class="wrap">
     <h2>Herramientas del curso</h2>
-
-    <nav class="rec-nav" role="tablist">
-      <span class="rec-nav-label">Categoría</span>
-      <button class="rec-tab active" data-tab="general" role="tab" aria-selected="true">General <span class="rec-tab-count">3</span></button>
-      <button class="rec-tab" data-tab="git" role="tab" aria-selected="false">Git <span class="rec-tab-count">3</span></button>
-    </nav>
-
-    <div class="rec-panel active" data-panel="general" role="tabpanel">
-      <div class="rec-grid">
-        <div class="rec-card">
-          <div class="rec-label">Gratis · Correo institucional</div>
-          <div class="rec-name">GitHub Student Pack</div>
-          <div class="rec-desc">Copilot Pro, créditos cloud, dominios y +100 herramientas premium. <em>El paso uno.</em></div>
-          <a class="rec-link" href="https://education.github.com/pack" target="_blank">education.github.com/pack →</a>
-        </div>
-        <div class="rec-card">
-          <div class="rec-label">Gratis · Correo institucional</div>
-          <div class="rec-name">JetBrains for Students</div>
-          <div class="rec-desc">PyCharm, IntelliJ, WebStorm y GoLand. <em>Los IDEs que usan en producción las empresas que los van a entrevistar.</em></div>
-          <a class="rec-link" href="https://www.jetbrains.com/community/education/" target="_blank">jetbrains.com/community/education →</a>
-        </div>
-        <div class="rec-card">
-          <div class="rec-label">Obligatorio · Repositorio del proyecto</div>
-          <div class="rec-name">GitHub</div>
-          <div class="rec-desc">Todo el trabajo del curso vive en GitHub. <em>Sin repositorio, no existió.</em> El proyecto integrador es público.</div>
-          <a class="rec-link" href="https://github.com" target="_blank">github.com →</a>
-        </div>
+    <div class="rec-grid">
+      <div class="rec-card">
+        <div class="rec-label">Gratis · Correo institucional</div>
+        <div class="rec-name">GitHub Student Pack</div>
+        <div class="rec-desc">Copilot Pro, créditos cloud, dominios y +100 herramientas premium. <em>El paso uno.</em></div>
+        <a class="rec-link" href="https://education.github.com/pack" target="_blank">education.github.com/pack →</a>
+      </div>
+      <div class="rec-card">
+        <div class="rec-label">Gratis · Correo institucional</div>
+        <div class="rec-name">JetBrains for Students</div>
+        <div class="rec-desc">PyCharm, IntelliJ, WebStorm y GoLand. <em>Los IDEs que usan en producción las empresas que los van a entrevistar.</em></div>
+        <a class="rec-link" href="https://www.jetbrains.com/community/education/" target="_blank">jetbrains.com/community/education →</a>
+      </div>
+      <div class="rec-card">
+        <div class="rec-label">Obligatorio · Repositorio del proyecto</div>
+        <div class="rec-name">GitHub</div>
+        <div class="rec-desc">Todo el trabajo del curso vive en GitHub. <em>Sin repositorio, no existió.</em> El proyecto integrador es público.</div>
+        <a class="rec-link" href="https://github.com" target="_blank">github.com →</a>
       </div>
     </div>
 
-    <div class="rec-panel" data-panel="git" role="tabpanel">
-      <div class="rec-grid">
-        <div class="rec-card">
-          <div class="rec-label">Oficial · Documentación y descarga</div>
-          <div class="rec-name">Git SCM</div>
-          <div class="rec-desc">Sitio oficial de Git: instalación para todos los sistemas y documentación completa. <em>La fuente de la verdad.</em></div>
-          <a class="rec-link" href="https://git-scm.com" target="_blank">git-scm.com →</a>
-        </div>
-        <div class="rec-card">
-          <div class="rec-label">Práctica · Juego en inglés</div>
-          <div class="rec-name">Git Mastery</div>
-          <div class="rec-desc">Retos interactivos para dominar Git desde cero. <em>Aprender haciendo, no leyendo.</em></div>
-          <a class="rec-link" href="https://gitmastery.me" target="_blank">gitmastery.me →</a>
-        </div>
-        <div class="rec-card">
-          <div class="rec-label">Práctica · Juego en español</div>
-          <div class="rec-name">Learn Git Branching</div>
-          <div class="rec-desc">Visualiza ramas, merges y rebases en un sandbox interactivo. <em>La mejor forma de entender el grafo de Git.</em></div>
-          <a class="rec-link" href="https://learngitbranching.js.org/?locale=es_ES" target="_blank">learngitbranching.js.org →</a>
-        </div>
+    <h3 class="rec-subhead">Cursos para seguir <em>creciendo</em></h3>
+    <p class="rec-subhead-note">Esta materia es el punto de partida. Estas plataformas son para los que quieren ir más lejos — por su cuenta, a su ritmo.</p>
+    <div class="rec-grid">
+      <div class="rec-card">
+        <div class="rec-label free">Gratis · Inglés</div>
+        <div class="rec-name">Unity Learn — Game Development</div>
+        <div class="rec-desc">Ruta completa de desarrollo de videojuegos con Unity 6. <em>De cero a tu primer juego publicado.</em></div>
+        <a class="rec-link" href="https://learn.unity.com/pathway/game-development/unity-version?version=6.3" target="_blank">learn.unity.com →</a>
+      </div>
+      <div class="rec-card">
+        <div class="rec-label free">Gratis · Español / Inglés</div>
+        <div class="rec-name">freeCodeCamp</div>
+        <div class="rec-desc">Certificaciones de desarrollo web, análisis de datos, Python y mucho más. <em>Todo gratis, a tu ritmo.</em></div>
+        <a class="rec-link" href="https://www.freecodecamp.org/espanol/catalog" target="_blank">freecodecamp.org →</a>
+      </div>
+      <div class="rec-card">
+        <div class="rec-label free">Gratis · Español / Inglés</div>
+        <div class="rec-name">Google Cloud for Students</div>
+        <div class="rec-desc">Cursos y créditos de Google Cloud Platform para estudiantes. <em>Infraestructura cloud real, la que usan las empresas.</em></div>
+        <a class="rec-link" href="https://cloud.google.com/edu/students?hl=es-419" target="_blank">cloud.google.com/edu/students →</a>
+      </div>
+      <div class="rec-card">
+        <div class="rec-label paid">Costo · Español</div>
+        <div class="rec-name">DataCamp</div>
+        <div class="rec-desc">Rutas para Analista de Datos, Ingeniero de Datos e Ingeniero de IA. <em>Práctica interactiva directo en el navegador.</em></div>
+        <a class="rec-link" href="https://www.datacamp.com/es" target="_blank">datacamp.com →</a>
+      </div>
+      <div class="rec-card">
+        <div class="rec-label paid">Costo · Inglés</div>
+        <div class="rec-name">Codecademy</div>
+        <div class="rec-desc">Backend, Frontend y bases de datos con ejercicios prácticos paso a paso. <em>Aprendes escribiendo código, no viendo videos.</em></div>
+        <a class="rec-link" href="https://www.codecademy.com" target="_blank">codecademy.com →</a>
+      </div>
+      <div class="rec-card">
+        <div class="rec-label paid">Costo · Español</div>
+        <div class="rec-name">Platzi</div>
+        <div class="rec-desc">Escuela online en español: IA, Backend, Cloud, Redes, Frontend, Finanzas, RH y Diseño. <em>El catálogo más amplio en español.</em></div>
+        <a class="rec-link" href="https://platzi.com/home/" target="_blank">platzi.com →</a>
       </div>
     </div>
   </div>
@@ -607,21 +612,6 @@ function buildSessions() {
 }
 
 buildSessions();
-
-// ─── RECURSOS TABS ───────────────────────────────────────────────────────────
-document.querySelectorAll('.rec-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    const target = tab.dataset.tab;
-    document.querySelectorAll('.rec-tab').forEach(t => {
-      const active = t.dataset.tab === target;
-      t.classList.toggle('active', active);
-      t.setAttribute('aria-selected', active);
-    });
-    document.querySelectorAll('.rec-panel').forEach(p => {
-      p.classList.toggle('active', p.dataset.panel === target);
-    });
-  });
-});
 
 // ─── REVEAL ON SCROLL ────────────────────────────────────────────────────────
 const obs = new IntersectionObserver(es => {
