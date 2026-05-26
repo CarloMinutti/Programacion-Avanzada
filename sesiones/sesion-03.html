@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión III — Tu primera clase — Programación Avanzada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EFE6D2;--paper-deep:#E6DBC2;--ink:#2A1D14;--ink-soft:#4A3A2C;--blood:#A02418;--blood-dark:#6E1810;--ochre:#B5852A;--olive:#5D6638;--line:rgba(42,29,20,.18);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:'Crimson Pro',Georgia,serif;font-size:18px;line-height:1.6;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.11 0 0 0 0 0.08 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.35' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.13 0 0 0 0 0.08 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;mix-blend-mode:multiply;}
+
+.course-nav{position:sticky;top:0;z-index:999;background:rgba(239,230,210,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;}
+.course-nav a{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:var(--ink-soft);transition:color .2s;}
+.course-nav a:hover{color:var(--blood);}
+.course-nav a.back::before{content:'← ';color:var(--blood);}
+.course-nav a.next::after{content:' →';color:var(--blood);}
+.course-nav .session-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(42,29,20,.4);}
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--blood);z-index:1001;width:0;}
+
+section{position:relative;padding:5rem 2rem;}
+.wrap{max-width:1080px;margin:0 auto;}
+.wrap-n{max-width:720px;margin:0 auto;}
+.marker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--blood);margin-bottom:1rem;display:flex;align-items:center;gap:1rem;}
+.marker::after{content:'';flex:1;height:1px;background:var(--line);}
+
+/* Hero */
+.hero{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:4rem 2rem;overflow:hidden;position:relative;}
+.hero-float{position:absolute;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--blood);opacity:.13;letter-spacing:.05em;pointer-events:none;white-space:nowrap;animation:floaty 14s ease-in-out infinite;}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(var(--r,0deg));}50%{transform:translateY(-22px) rotate(var(--r,0deg));}}
+.hero-inner{position:relative;z-index:2;max-width:1080px;margin:0 auto;width:100%;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(42,29,20,.5);margin-bottom:1.5rem;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(3rem,8vw,7rem);line-height:.98;letter-spacing:-.03em;color:var(--ink);}
+.hero h1 em{font-style:italic;color:var(--blood);}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.2rem,2.5vw,1.8rem);color:var(--ink-soft);margin-top:1.5rem;max-width:620px;}
+
+.lead{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:500;line-height:1.25;letter-spacing:-.01em;color:var(--ink);}
+.lead em{font-style:italic;color:var(--blood);}
+.subtle{font-size:1.05rem;color:var(--ink-soft);margin-top:1rem;max-width:640px;}
+
+.widget{background:var(--paper-deep);border:1px solid var(--line);border-left:3px solid var(--blood);padding:2.2rem;margin-top:2.5rem;position:relative;}
+.widget::before{content:attr(data-tag);position:absolute;top:-.7rem;left:1.8rem;background:var(--paper);padding:0 .9rem;font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.25em;text-transform:uppercase;color:var(--blood);}
+.w-prompt{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.25rem;color:var(--ink-soft);margin-bottom:1.5rem;}
+.w-prompt em{color:var(--blood);font-style:italic;}
+.w-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;padding:.6rem 1rem;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.btn:hover{border-color:var(--blood);color:var(--blood);}
+.btn.on{background:var(--blood);color:var(--paper);border-color:var(--blood);}
+.btn-olive.on{background:var(--olive);border-color:var(--olive);}
+
+/* Generic code block (light parchment) */
+.codeblock{background:var(--paper);border:1px solid var(--line);padding:1.4rem 1.6rem;font-family:'JetBrains Mono',monospace;font-size:.84rem;line-height:1.8;overflow-x:auto;}
+.cl{white-space:pre;}
+.kw{color:var(--blood);font-style:italic;}
+.cls{color:var(--ink);font-weight:700;}
+.str{color:var(--ochre);}
+.self{color:var(--olive);font-weight:700;}
+.fn{color:var(--ink);font-weight:600;}
+.cm{color:rgba(42,29,20,.4);font-style:italic;}
+.nm{color:var(--ink-soft);}
+
+/* ─── W1: Anatomía interactiva ──────────────────── */
+.anat-wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:1.5rem;align-items:start;}
+.anat-code{background:var(--paper);border:1px solid var(--line);padding:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.84rem;line-height:2;}
+.anat-line{white-space:pre;}
+.t{cursor:pointer;border-radius:2px;padding:.05rem .15rem;transition:all .2s;border-bottom:1.5px dashed transparent;}
+.t:hover{border-bottom-color:currentColor;background:rgba(160,36,24,.06);}
+.t.active{background:var(--blood);color:var(--paper)!important;}
+.t.kw{color:var(--blood);font-style:italic;}
+.t.cls{color:var(--ink);font-weight:700;}
+.t.init{color:var(--ochre);font-weight:600;}
+.t.self{color:var(--olive);font-weight:700;}
+.t.attr{color:var(--ink-soft);}
+.t.method{color:var(--ink);font-weight:600;}
+.t.str{color:var(--ochre);}
+.anat-panel{background:var(--ink);padding:1.5rem;min-height:220px;position:sticky;top:5rem;}
+.anat-panel-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ochre);margin-bottom:.8rem;}
+.anat-panel-title{font-family:'JetBrains Mono',monospace;font-size:1.3rem;color:var(--paper);margin-bottom:.9rem;}
+.anat-panel-text{font-family:'Cormorant Garamond',serif;font-size:1.15rem;line-height:1.5;color:rgba(239,230,210,.8);font-style:italic;}
+.anat-panel-text strong{color:var(--ochre);font-style:normal;font-weight:600;}
+
+/* ─── W2: self ──────────────────────────────────── */
+.self-stage{display:grid;grid-template-columns:1fr;gap:1.3rem;}
+.self-objs{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.self-obj{background:var(--paper);border:2px solid var(--line);border-radius:6px;padding:1rem 1.4rem;cursor:pointer;transition:all .25s;text-align:center;min-width:130px;}
+.self-obj:hover{border-color:var(--olive);}
+.self-obj.sel{border-color:var(--olive);background:rgba(93,102,56,.08);box-shadow:0 0 0 3px rgba(93,102,56,.12);}
+.self-obj-name{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--olive);font-weight:700;margin-bottom:.3rem;}
+.self-obj-attr{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink-soft);}
+.self-flow{background:var(--paper);border:1px solid var(--line);padding:1.5rem;text-align:center;font-family:'JetBrains Mono',monospace;}
+.self-call{font-size:1rem;color:var(--ink);margin-bottom:1rem;}
+.self-call .obj{color:var(--olive);font-weight:700;}
+.self-arrow{font-size:1.5rem;color:var(--blood);margin:.5rem 0;opacity:0;transition:opacity .4s;}
+.self-arrow.show{opacity:1;}
+.self-translate{font-size:.9rem;color:var(--ink-soft);opacity:0;transition:opacity .4s;}
+.self-translate.show{opacity:1;}
+.self-translate .obj{color:var(--olive);font-weight:700;}
+.self-translate .selfk{color:var(--blood);font-weight:700;}
+.self-out{margin-top:1.2rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.3rem;color:var(--ink);min-height:1.6rem;}
+.self-out em{color:var(--blood);}
+
+/* ─── W3: Instanciación ─────────────────────────── */
+.inst-stage{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:center;}
+.inst-left{font-family:'JetBrains Mono',monospace;}
+.inst-call{font-size:1rem;color:var(--ink);background:var(--paper);border:1px solid var(--line);padding:1rem 1.2rem;margin-bottom:1rem;}
+.inst-call .arg{display:inline-block;padding:.1rem .3rem;border-radius:2px;transition:all .8s;}
+.inst-call .arg.a1{color:var(--ochre);background:rgba(181,133,42,.12);}
+.inst-call .arg.a2{color:var(--blood);background:rgba(160,36,24,.1);}
+.inst-ctor{background:var(--ink);padding:1.2rem;font-size:.78rem;line-height:1.9;}
+.inst-ctor .ln{color:var(--paper);white-space:pre;}
+.inst-ctor .kw{color:#D4956A;font-style:italic;}
+.inst-ctor .self{color:#8EAF8B;font-weight:700;}
+.inst-ctor .slot{display:inline-block;min-width:46px;text-align:center;border-bottom:1.5px dashed var(--ochre);color:var(--ochre);transition:all .4s;}
+.inst-ctor .slot.filled{border-bottom-style:solid;}
+.inst-obj{background:var(--paper);border:2px solid var(--olive);border-top:3px solid var(--olive);padding:1.3rem;opacity:.35;transition:opacity .5s;}
+.inst-obj.born{opacity:1;animation:objBorn .5s cubic-bezier(.16,1,.3,1);}
+@keyframes objBorn{0%{transform:scale(.85);}100%{transform:scale(1);}}
+.inst-obj-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.15em;color:var(--olive);margin-bottom:.7rem;text-transform:uppercase;}
+.inst-obj-row{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--ink);padding:.2rem 0;}
+.inst-obj-row span{color:var(--blood);font-weight:700;}
+
+/* ─── W4: Python vs Java ────────────────────────── */
+.pj-stage{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.pj-col{background:var(--paper);border:1px solid var(--line);overflow:hidden;}
+.pj-head{background:var(--ink);color:var(--paper);font-family:'JetBrains Mono',monospace;font-size:.75rem;padding:.7rem 1.2rem;letter-spacing:.1em;display:flex;justify-content:space-between;align-items:center;}
+.pj-head .badge{font-size:.6rem;color:var(--ochre);}
+.pj-body{padding:1.2rem;font-family:'JetBrains Mono',monospace;font-size:.76rem;line-height:1.9;overflow-x:auto;}
+.pj-line{white-space:pre;display:block;padding:0 .3rem;border-radius:2px;transition:background .3s;}
+.pj-line.lit{background:rgba(160,36,24,.12);}
+.pj-line .kw{color:var(--blood);font-style:italic;}
+.pj-line .cls{color:var(--ink);font-weight:700;}
+.pj-line .str{color:var(--ochre);}
+.pj-line .self{color:var(--olive);font-weight:700;}
+.pj-line .ty{color:var(--ink-soft);}
+
+/* ─── Taller ───────────────────────────────────── */
+.taller{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--olive);padding:2rem;margin-top:2rem;}
+.taller-tag{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--olive);margin-bottom:1rem;}
+.taller-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.3rem;}
+.taller-step{background:var(--paper-deep);border:1px solid var(--line);padding:1.2rem;}
+.taller-step-n{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.8rem;color:var(--blood);line-height:1;margin-bottom:.5rem;}
+.taller-step-t{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--ink);margin-bottom:.3rem;}
+.taller-step-d{font-size:.92rem;color:var(--ink-soft);}
+
+/* Cierre */
+.cierre{background:var(--paper-deep);}
+.tarea{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--ochre);padding:2rem;margin-top:2rem;}
+.tarea-tag{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--ochre);margin-bottom:1rem;}
+.tarea ol{margin-left:1.3rem;color:var(--ink-soft);}
+.tarea li{padding:.4rem 0;font-size:1.05rem;}
+.tarea li strong{color:var(--ink);}
+.tarea code{font-family:'JetBrains Mono',monospace;font-size:.85rem;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);}
+
+footer{padding:3rem 2rem;border-top:1px solid var(--line);text-align:center;}
+.foot-meta{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(42,29,20,.4);}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ─── W5: Getters/Setters ──────────────────────── */
+.gs-stage{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:stretch;}
+.gs-code{background:var(--ink);padding:1.4rem;font-family:'JetBrains Mono',monospace;font-size:.76rem;line-height:1.95;}
+.gs-code .ln{color:var(--paper);white-space:pre;display:block;border-radius:2px;transition:background .3s;padding:0 .25rem;}
+.gs-code .ln.flash-ok{background:rgba(93,102,56,.4);}
+.gs-code .ln.flash-no{background:rgba(160,36,24,.35);}
+.gs-code .kw{color:#D4956A;font-style:italic;}
+.gs-code .self{color:#8EAF8B;font-weight:700;}
+.gs-code .cm{color:rgba(239,230,210,.42);font-style:italic;}
+.gs-code .str{color:#C9A961;}
+.gs-demo{background:var(--paper);border:1px solid var(--line);padding:1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.gs-val-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.3rem;}
+.gs-val{font-family:'Cormorant Garamond',serif;font-size:3.6rem;color:var(--ink);line-height:1;transition:all .4s;}
+.gs-val.ok{color:var(--olive);}
+.gs-val.no{animation:shake .4s;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+.gs-gate{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--ink-soft);margin:1rem 0 .4rem;padding:.45rem 1rem;border:1px dashed var(--line);border-radius:20px;}
+.gs-feedback{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;min-height:1.6rem;margin-top:.6rem;}
+.gs-feedback.ok{color:var(--olive);}
+.gs-feedback.no{color:var(--blood);}
+.gs-tries{display:flex;gap:.5rem;margin-top:1.2rem;flex-wrap:wrap;justify-content:center;}
+
+/* ─── W6: __str__ ──────────────────────────────── */
+.str-stage{display:grid;grid-template-columns:1fr;gap:1.2rem;}
+.str-term{background:var(--ink);padding:1.3rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;}
+.str-term .prompt{color:#8EAF8B;}
+.str-term .cmd{color:var(--paper);}
+.str-out{margin-top:.6rem;font-size:.82rem;transition:all .4s;}
+.str-out.ugly{color:rgba(239,230,210,.45);}
+.str-out.pretty{color:#C9A961;font-weight:500;}
+.str-method{background:var(--paper);border:1px solid var(--line);padding:1.2rem 1.4rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.9;transition:all .4s;}
+.str-method.off{opacity:.3;}
+.str-method .ln{white-space:pre;display:block;}
+.str-method .kw{color:var(--blood);font-style:italic;}
+.str-method .self{color:var(--olive);font-weight:700;}
+.str-method .str{color:var(--ochre);}
+
+/* ─── W6b: __eq__ / __hash__ ───────────────────── */
+.eq-objs{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.3rem;}
+.eq-obj{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:var(--paper);border:1px solid var(--line);padding:.7rem 1rem;color:var(--ink);}
+.eq-result{display:flex;gap:1rem;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;margin-bottom:1rem;}
+.eq-expr{color:var(--ink);}
+.eq-arrow{color:var(--blood);}
+.eq-bool{font-weight:700;font-size:1.4rem;transition:all .3s;}
+.eq-bool.no{color:var(--blood);}
+.eq-bool.yes{color:var(--olive);}
+.eq-explain{text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--ink-soft);min-height:2.5rem;}
+.eq-explain strong{color:var(--blood);font-style:normal;font-weight:600;}
+
+@media(max-width:860px){
+  section{padding:3.5rem 1.2rem;}
+  .anat-wrap,.inst-stage,.pj-stage,.gs-stage{grid-template-columns:1fr;}
+  .anat-panel{position:relative;top:0;}
+  .taller-steps{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<nav class="course-nav">
+  <a href="sesion-02.html" class="back">Sesión 02</a>
+  <span class="session-label">Sesión 03 · 27.05.2026</span>
+  <a href="../index.html" class="next">Curso</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-float" style="top:16%;left:9%;--r:-4deg">class Estudiante:</div>
+  <div class="hero-float" style="top:28%;right:11%;--r:3deg;animation-delay:-3s">def __init__(self):</div>
+  <div class="hero-float" style="bottom:30%;left:13%;--r:2deg;animation-delay:-6s">self.nombre = nombre</div>
+  <div class="hero-float" style="bottom:18%;right:15%;--r:-3deg;animation-delay:-9s">ana = Estudiante("Ana", 20)</div>
+  <div class="hero-float" style="top:50%;left:44%;--r:1deg;animation-delay:-4.5s">return self.saludar()</div>
+  <div class="hero-inner">
+    <div class="hero-label">Sesión III · Declaraciones · Ref. Temario 1.2.1 – 1.2.5</div>
+    <h1>Tu primera<br><em>clase.</em></h1>
+    <p class="hero-sub">Ayer dibujamos objetos en la mente. Hoy los escribimos en código — en Python <em>y</em> en Java.</p>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section>
+  <div class="wrap-n">
+    <p class="marker">I · Del concepto al código</p>
+    <p class="lead">Una clase no es magia.<br>Es una <em>palabra clave</em>, un constructor, y datos con nombre.</p>
+    <p class="subtle">Vamos a diseccionar una clase real — la <code style="font-family:'JetBrains Mono',monospace;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);font-size:.85rem">clase Estudiante</code> — pieza por pieza. Toca cada parte para entenderla.</p>
+  </div>
+</section>
+
+<!-- W1: Anatomía -->
+<section>
+  <div class="wrap">
+    <p class="marker">II · Anatomía de una clase</p>
+    <p class="lead">Toca cada parte del código.<br>Cada pieza <em>tiene un trabajo.</em></p>
+    <div class="widget" data-tag="Toca el código">
+      <div class="anat-wrap">
+        <div class="anat-code" id="anat-code">
+<div class="anat-line"><span class="t kw" data-e="class">class</span> <span class="t cls" data-e="cls">Estudiante</span>:</div>
+<div class="anat-line">    <span class="t kw" data-e="def">def</span> <span class="t init" data-e="init">__init__</span>(<span class="t self" data-e="self">self</span>, nombre, edad):</div>
+<div class="anat-line">        <span class="t attr" data-e="attr">self.nombre = nombre</span></div>
+<div class="anat-line">        <span class="t attr" data-e="attr">self.edad = edad</span></div>
+<div class="anat-line">        <span class="t attr" data-e="list">self.materias = []</span></div>
+<div class="anat-line"> </div>
+<div class="anat-line">    <span class="t kw" data-e="def">def</span> <span class="t method" data-e="method">saludar</span>(<span class="t self" data-e="self">self</span>):</div>
+<div class="anat-line">        <span class="t kw" data-e="return">return</span> <span class="t str" data-e="fstring">f"Hola, soy {self.nombre}"</span></div>
+        </div>
+        <div class="anat-panel">
+          <div class="anat-panel-tag">Selecciona una pieza</div>
+          <div class="anat-panel-title" id="anat-title">👆 Toca el código</div>
+          <div class="anat-panel-text" id="anat-text">Cada color es una idea distinta. Empieza por la palabra <strong>class</strong>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W2: self -->
+<section>
+  <div class="wrap">
+    <p class="marker">III · El misterio de <em style="font-style:italic">self</em></p>
+    <p class="lead"><em>self</em> es el "yo" del objeto.<br>Es el objeto hablando de sí mismo.</p>
+    <p class="subtle">Cuando escribes <code style="font-family:'JetBrains Mono',monospace;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--olive);font-size:.85rem">ana.saludar()</code>, Python pasa <em>ana</em> como self automáticamente. Elige un objeto y míralo:</p>
+    <div class="widget" data-tag="Elige un objeto">
+      <div class="self-stage">
+        <div class="self-objs">
+          <div class="self-obj sel" data-name="ana" data-attr="Ana">
+            <div class="self-obj-name">ana</div>
+            <div class="self-obj-attr">nombre = "Ana"</div>
+          </div>
+          <div class="self-obj" data-name="luis" data-attr="Luis">
+            <div class="self-obj-name">luis</div>
+            <div class="self-obj-attr">nombre = "Luis"</div>
+          </div>
+          <div class="self-obj" data-name="sofia" data-attr="Sofía">
+            <div class="self-obj-name">sofia</div>
+            <div class="self-obj-attr">nombre = "Sofía"</div>
+          </div>
+        </div>
+        <div class="self-flow">
+          <div class="self-call">Llamas: <span class="obj" id="self-objname">ana</span>.saludar()</div>
+          <div class="self-arrow" id="self-arrow">↓ Python lo traduce a ↓</div>
+          <div class="self-translate" id="self-trans">Estudiante.saludar(<span class="selfk">self</span> = <span class="obj" id="self-transname">ana</span>)</div>
+          <div class="self-out" id="self-out"></div>
+        </div>
+      </div>
+      <div class="w-controls">
+        <button class="btn on btn-olive" id="self-run">▶ Ejecutar saludar()</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W3: Instanciación -->
+<section>
+  <div class="wrap">
+    <p class="marker">IV · Crear un objeto</p>
+    <p class="lead">Los argumentos <em>viajan</em><br>del paréntesis a los atributos.</p>
+    <p class="subtle">Pulsa "Crear" y observa cómo <em>"Ana"</em> y <em>20</em> entran al constructor y llenan el objeto.</p>
+    <div class="widget" data-tag="Crea el objeto">
+      <div class="inst-stage">
+        <div class="inst-left">
+          <div class="inst-call">ana = Estudiante(<span class="arg a1" id="arg1">"Ana"</span>, <span class="arg a2" id="arg2">20</span>)</div>
+          <div class="inst-ctor">
+            <div class="ln"><span class="kw">def</span> __init__(<span class="self">self</span>, nombre, edad):</div>
+            <div class="ln">    <span class="self">self</span>.nombre = <span class="slot" id="slot1">?</span></div>
+            <div class="ln">    <span class="self">self</span>.edad = <span class="slot" id="slot2">?</span></div>
+          </div>
+        </div>
+        <div class="inst-obj" id="inst-obj">
+          <div class="inst-obj-tag">objeto: ana</div>
+          <div class="inst-obj-row">nombre: <span id="obj-nombre">—</span></div>
+          <div class="inst-obj-row">edad: <span id="obj-edad">—</span></div>
+          <div class="inst-obj-row">materias: <span>[]</span></div>
+        </div>
+      </div>
+      <div class="w-controls">
+        <button class="btn on" id="inst-run">▶ Crear objeto</button>
+        <button class="btn" id="inst-reset">⟲ Reiniciar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W4: Python vs Java -->
+<section>
+  <div class="wrap">
+    <p class="marker">V · La misma clase, dos lenguajes</p>
+    <p class="lead">Python dice poco.<br>Java dice <em>todo, explícito.</em></p>
+    <p class="subtle">Misma idea, distinto carácter. Toca un concepto y mira dónde vive en cada lenguaje:</p>
+    <div class="widget" data-tag="Compara los conceptos">
+      <div class="pj-stage">
+        <div class="pj-col">
+          <div class="pj-head">Python <span class="badge">conciso</span></div>
+          <div class="pj-body" id="py-body">
+<span class="pj-line" data-c="class"><span class="kw">class</span> <span class="cls">Estudiante</span>:</span>
+<span class="pj-line" data-c="ctor">    <span class="kw">def</span> __init__(<span class="self">self</span>, nombre, edad):</span>
+<span class="pj-line" data-c="attr">        <span class="self">self</span>.nombre = nombre</span>
+<span class="pj-line" data-c="attr">        <span class="self">self</span>.edad = edad</span>
+<span class="pj-line"> </span>
+<span class="pj-line" data-c="method">    <span class="kw">def</span> saludar(<span class="self">self</span>):</span>
+<span class="pj-line" data-c="method">        <span class="kw">return</span> <span class="str">f"Hola, soy {self.nombre}"</span></span>
+          </div>
+        </div>
+        <div class="pj-col">
+          <div class="pj-head">Java <span class="badge">explícito</span></div>
+          <div class="pj-body" id="java-body">
+<span class="pj-line" data-c="class"><span class="kw">public class</span> <span class="cls">Estudiante</span> {</span>
+<span class="pj-line" data-c="attr">    <span class="ty">private String</span> nombre;</span>
+<span class="pj-line" data-c="attr">    <span class="ty">private int</span> edad;</span>
+<span class="pj-line"> </span>
+<span class="pj-line" data-c="ctor">    <span class="kw">public</span> Estudiante(String nombre, <span class="ty">int</span> edad) {</span>
+<span class="pj-line" data-c="ctor">        <span class="self">this</span>.nombre = nombre;</span>
+<span class="pj-line" data-c="ctor">        <span class="self">this</span>.edad = edad;</span>
+<span class="pj-line" data-c="ctor">    }</span>
+<span class="pj-line"> </span>
+<span class="pj-line" data-c="method">    <span class="kw">public</span> String saludar() {</span>
+<span class="pj-line" data-c="method">        <span class="kw">return</span> <span class="str">"Hola, soy " + this.nombre</span>;</span>
+<span class="pj-line" data-c="method">    }</span>
+<span class="pj-line" data-c="class">}</span>
+          </div>
+        </div>
+      </div>
+      <div class="w-controls">
+        <button class="btn on" data-concept="class">Clase</button>
+        <button class="btn" data-concept="ctor">Constructor</button>
+        <button class="btn" data-concept="attr">Atributos</button>
+        <button class="btn" data-concept="method">Método</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W5: Getters/Setters -->
+<section>
+  <div class="wrap">
+    <p class="marker">VI · Getters & Setters</p>
+    <p class="lead">No dejes que nadie meta <em>basura</em><br>en tus atributos. El setter es el guardia.</p>
+    <p class="subtle">Asignar directo no valida nada: <code style="font-family:'JetBrains Mono',monospace;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);font-size:.85rem">ana.edad = -5</code> pasa sin chistar. Un setter revisa antes de guardar. Prueba a romperlo:</p>
+    <div class="widget" data-tag="Prueba el guardia">
+      <div class="gs-stage">
+        <div class="gs-code">
+<span class="ln"><span class="kw">def</span> set_edad(<span class="self">self</span>, valor):</span>
+<span class="ln" id="gs-l-ok">    <span class="kw">if</span> 0 &lt;= valor &lt;= 120:</span>
+<span class="ln" id="gs-l-okv">        <span class="self">self</span>.edad = valor   <span class="cm"># ✓</span></span>
+<span class="ln"><span class="kw">    else</span>:</span>
+<span class="ln" id="gs-l-no">        <span class="kw">raise</span> ValueError(<span class="str">"Edad inválida"</span>)</span>
+        </div>
+        <div class="gs-demo">
+          <div class="gs-val-label">self.edad</div>
+          <div class="gs-val" id="gs-val">20</div>
+          <div class="gs-gate">guardia: 0 ≤ valor ≤ 120</div>
+          <div class="gs-feedback" id="gs-fb">Intenta cambiar la edad ↓</div>
+          <div class="gs-tries">
+            <button class="btn" data-v="-5">set_edad(-5)</button>
+            <button class="btn" data-v="25">set_edad(25)</button>
+            <button class="btn" data-v="200">set_edad(200)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W6: __str__ y __eq__ -->
+<section>
+  <div class="wrap">
+    <p class="marker">VII · Representación e identidad</p>
+    <p class="lead">Sin <em>__str__</em>, tu objeto se imprime feo.<br>Con él, se imprime <em>humano.</em></p>
+    <p class="subtle">El método <code style="font-family:'JetBrains Mono',monospace;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);font-size:.85rem">__str__</code> (el <em>toString</em> de Java) decide qué ves al imprimir. Actívalo:</p>
+    <div class="widget" data-tag="Activa __str__">
+      <div class="str-stage">
+        <div class="str-term">
+          <div><span class="prompt">&gt;&gt;&gt; </span><span class="cmd">print(ana)</span></div>
+          <div class="str-out ugly" id="str-out">&lt;__main__.Estudiante object at 0x7f8b2c0a1d30&gt;</div>
+        </div>
+        <div class="str-method off" id="str-method">
+<span class="ln"><span class="kw">def</span> __str__(<span class="self">self</span>):</span>
+<span class="ln">    <span class="kw">return</span> <span class="str">f"Estudiante({self.nombre}, {self.edad})"</span></span>
+        </div>
+      </div>
+      <div class="w-controls">
+        <button class="btn on" id="str-toggle">+ Agregar __str__</button>
+      </div>
+    </div>
+
+    <div class="widget" data-tag="Igualdad · __eq__ y __hash__" style="margin-top:1.8rem">
+      <div class="w-prompt">¿Dos objetos con los <em>mismos datos</em> son iguales?</div>
+      <div class="eq-objs">
+        <div class="eq-obj">ana1 = Estudiante("Ana", 20)</div>
+        <div class="eq-obj">ana2 = Estudiante("Ana", 20)</div>
+      </div>
+      <div class="eq-result">
+        <span class="eq-expr">ana1 == ana2</span>
+        <span class="eq-arrow">→</span>
+        <span class="eq-bool no" id="eq-bool">False</span>
+      </div>
+      <div class="eq-explain" id="eq-explain">Sin <strong>__eq__</strong>, Python compara su lugar en memoria. Son objetos distintos aunque tengan los mismos datos.</div>
+      <div class="w-controls">
+        <button class="btn on" id="eq-toggle">+ Definir __eq__ y __hash__</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TALLER -->
+<section>
+  <div class="wrap">
+    <p class="marker">VIII · Taller · en clase</p>
+    <p class="lead">Ahora tú.<br>Escribe la clase <em>Estudiante</em> — en Python y en Java.</p>
+    <div class="taller">
+      <div class="taller-tag">Manos al teclado · 30 min</div>
+      <div class="taller-steps">
+        <div class="taller-step">
+          <div class="taller-step-n">1</div>
+          <div class="taller-step-t">Python</div>
+          <div class="taller-step-d">Define <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">Estudiante</code> con nombre, edad y un método <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">saludar()</code>. Crea 2 objetos.</div>
+        </div>
+        <div class="taller-step">
+          <div class="taller-step-n">2</div>
+          <div class="taller-step-t">Java</div>
+          <div class="taller-step-d">Reescribe la misma clase en Java. Nota qué cambia: tipos, <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">this</code>, <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">public</code>.</div>
+        </div>
+        <div class="taller-step">
+          <div class="taller-step-n">3</div>
+          <div class="taller-step-t">Push</div>
+          <div class="taller-step-d">Sube ambos archivos a tu repo del proyecto. <strong>Tu primer aporte al integrador.</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CIERRE -->
+<section class="cierre">
+  <div class="wrap-n">
+    <p class="marker">IX · Para el viernes</p>
+    <p class="lead">Si escribiste una clase con <em>self</em> y la entendiste,<br>ya eres programador orientado a objetos.</p>
+    <div class="tarea">
+      <div class="tarea-tag">Tarea · sube a tu repo</div>
+      <ol>
+        <li>Toma la clase de tu objeto de la Sesión 2 (mochila, celular, mascota).</li>
+        <li>Conviértela en <strong>código real en Python</strong>: <code>class</code>, <code>__init__</code>, atributos con <code>self</code> y al menos 2 métodos.</li>
+        <li>Crea <strong>2 objetos</strong> de tu clase y llama sus métodos.</li>
+        <li>Reescribe la clase en <strong>Java</strong> (aunque batalles — esa lucha enseña).</li>
+        <li><strong>Commit y push.</strong> Trae dudas el viernes.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-meta">Programación Avanzada · MCT158 · Carlos D. Vaca Ramírez · Unitec Atizapán 2026-3</div>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';});
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('section>.wrap,section>.wrap-n').forEach(el=>{el.classList.add('reveal');obs.observe(el);});
+const $=id=>document.getElementById(id);
+
+// ─── W1: Anatomía interactiva ──────────────────────────────────
+const anatData={
+  class:{t:'class',x:'La palabra clave que crea un <strong>molde nuevo</strong>. Todo lo que sigue define cómo serán los objetos de este tipo.'},
+  cls:{t:'Estudiante',x:'El <strong>nombre de la clase</strong>. Por convención empieza con mayúscula. Es el molde — todavía no es un objeto.'},
+  def:{t:'def',x:'Define una función. Dentro de una clase, una función se llama <strong>método</strong>.'},
+  init:{t:'__init__',x:'El <strong>constructor</strong>. Python lo ejecuta solo cada vez que creas un objeto. Aquí nacen los atributos.'},
+  self:{t:'self',x:'El <strong>objeto específico</strong> que se está usando. Es el "yo" del objeto. Python lo pasa automáticamente.'},
+  attr:{t:'Atributo',x:'<strong>self.nombre</strong> guarda un dato dentro del objeto. Cada objeto tiene su propia copia.'},
+  list:{t:'Lista vacía',x:'<strong>self.materias = []</strong> arranca vacía. Se irá llenando cuando llames métodos que le agreguen cosas.'},
+  method:{t:'Método',x:'<strong>saludar()</strong> es algo que el objeto sabe hacer. Siempre recibe <strong>self</strong> como primer parámetro.'},
+  return:{t:'return',x:'Devuelve un valor a quien llamó al método. Sin <strong>return</strong>, el método no entrega nada.'},
+  fstring:{t:'f-string',x:'Texto con datos incrustados. <strong>{self.nombre}</strong> se reemplaza por el valor real del atributo.'},
+};
+document.querySelectorAll('#anat-code .t').forEach(tok=>{
+  tok.addEventListener('click',()=>{
+    document.querySelectorAll('#anat-code .t').forEach(x=>x.classList.remove('active'));
+    tok.classList.add('active');
+    const d=anatData[tok.dataset.e];
+    $('anat-title').textContent=d.t;
+    $('anat-text').innerHTML=d.x;
+  });
+});
+
+// ─── W2: self ──────────────────────────────────────────────────
+let selfName='ana',selfAttr='Ana';
+document.querySelectorAll('.self-obj').forEach(o=>{
+  o.addEventListener('click',()=>{
+    document.querySelectorAll('.self-obj').forEach(x=>x.classList.remove('sel'));
+    o.classList.add('sel');
+    selfName=o.dataset.name;selfAttr=o.dataset.attr;
+    $('self-objname').textContent=selfName;
+    $('self-transname').textContent=selfName;
+    $('self-arrow').classList.remove('show');
+    $('self-trans').classList.remove('show');
+    $('self-out').innerHTML='';
+  });
+});
+$('self-run').addEventListener('click',()=>{
+  $('self-arrow').classList.remove('show');$('self-trans').classList.remove('show');$('self-out').innerHTML='';
+  setTimeout(()=>$('self-arrow').classList.add('show'),200);
+  setTimeout(()=>$('self-trans').classList.add('show'),700);
+  setTimeout(()=>{$('self-out').innerHTML='→ devuelve: <em>"Hola, soy '+selfAttr+'"</em>';},1300);
+});
+
+// ─── W3: Instanciación ─────────────────────────────────────────
+function instRun(){
+  instReset();
+  // arg1 "Ana" flies to slot1
+  setTimeout(()=>{$('slot1').textContent='"Ana"';$('slot1').classList.add('filled');},400);
+  setTimeout(()=>{$('slot2').textContent='20';$('slot2').classList.add('filled');},900);
+  setTimeout(()=>{
+    $('obj-nombre').innerHTML='<span style="color:var(--ochre)">"Ana"</span>';
+    $('obj-edad').innerHTML='<span style="color:var(--blood)">20</span>';
+    $('inst-obj').classList.add('born');
+  },1500);
+}
+function instReset(){
+  $('slot1').textContent='?';$('slot1').classList.remove('filled');
+  $('slot2').textContent='?';$('slot2').classList.remove('filled');
+  $('obj-nombre').textContent='—';$('obj-edad').textContent='—';
+  $('inst-obj').classList.remove('born');
+}
+$('inst-run').addEventListener('click',instRun);
+$('inst-reset').addEventListener('click',instReset);
+
+// ─── W4: Python vs Java ────────────────────────────────────────
+function pjLight(concept){
+  document.querySelectorAll('.pj-line').forEach(l=>{
+    l.classList.toggle('lit', l.dataset.c===concept);
+  });
+}
+document.querySelectorAll('[data-concept]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-concept]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    pjLight(b.dataset.concept);
+  });
+});
+pjLight('class');
+
+// ─── W5: Getters/Setters ───────────────────────────────────────
+let gsEdad=20;
+document.querySelectorAll('.gs-tries .btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const v=parseInt(b.dataset.v);
+    const val=$('gs-val'),fb=$('gs-fb');
+    $('gs-l-okv').classList.remove('flash-ok');$('gs-l-no').classList.remove('flash-no');
+    val.classList.remove('ok','no');
+    void val.offsetWidth;
+    if(v>=0&&v<=120){
+      gsEdad=v;val.textContent=v;val.classList.add('ok');
+      fb.textContent='✓ '+v+' es válido. Guardado.';fb.className='gs-feedback ok';
+      $('gs-l-okv').classList.add('flash-ok');
+      setTimeout(()=>val.classList.remove('ok'),1100);
+    }else{
+      val.classList.add('no');
+      fb.textContent='✗ '+v+' rechazado. La edad sigue en '+gsEdad+'.';fb.className='gs-feedback no';
+      $('gs-l-no').classList.add('flash-no');
+      setTimeout(()=>val.classList.remove('no'),500);
+    }
+    setTimeout(()=>{$('gs-l-okv').classList.remove('flash-ok');$('gs-l-no').classList.remove('flash-no');},1300);
+  });
+});
+
+// ─── W6: __str__ ───────────────────────────────────────────────
+let strOn=false;
+$('str-toggle').addEventListener('click',()=>{
+  strOn=!strOn;
+  const out=$('str-out'),m=$('str-method'),btn=$('str-toggle');
+  if(strOn){
+    out.innerHTML='Estudiante(Ana, 20)';out.className='str-out pretty';
+    m.classList.remove('off');
+    btn.textContent='− Quitar __str__';btn.classList.remove('on');
+  }else{
+    out.innerHTML='&lt;__main__.Estudiante object at 0x7f8b2c0a1d30&gt;';out.className='str-out ugly';
+    m.classList.add('off');
+    btn.textContent='+ Agregar __str__';btn.classList.add('on');
+  }
+});
+
+// ─── W6b: __eq__ / __hash__ ────────────────────────────────────
+let eqOn=false;
+$('eq-toggle').addEventListener('click',()=>{
+  eqOn=!eqOn;
+  const b=$('eq-bool'),ex=$('eq-explain'),btn=$('eq-toggle');
+  if(eqOn){
+    b.textContent='True';b.className='eq-bool yes';
+    ex.innerHTML='Con <strong>__eq__</strong>, Python compara los <strong>datos</strong> (nombre y edad). Y <strong>__hash__</strong> permite usarlos en sets y como llaves de diccionario.';
+    btn.textContent='− Quitar __eq__';btn.classList.remove('on');
+  }else{
+    b.textContent='False';b.className='eq-bool no';
+    ex.innerHTML='Sin <strong>__eq__</strong>, Python compara su lugar en memoria. Son objetos distintos aunque tengan los mismos datos.';
+    btn.textContent='+ Definir __eq__ y __hash__';btn.classList.add('on');
+  }
+});
+</script>
+</body>
+</html>
