@@ -173,6 +173,7 @@ print(" Demo · Sistema de inscripciones")
 print("=" * 50)
 
 ana = Estudiante("Ana", 20, "ana@unitec.mx")
+
 luis = Estudiante("Luis", 22, "luis@unitec.mx")
 
 mct158 = Materia("mct158", "Programación Avanzada", 8)
