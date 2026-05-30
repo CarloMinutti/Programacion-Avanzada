@@ -9,20 +9,9 @@ EL PROBLEMA
 El banco necesita modelar una CuentaBancaria. Aplica reglas estrictas:
 
   - titular           → público, todos pueden leerlo.
-  - numero_cuenta     → protegido, no lo enseñes alegremente.
+  - _numero_cuenta     → protegido, no lo enseñes alegremente.
   - __saldo           → privado, NADIE lo toca por fuera.
   - __nip             → privado, 4 dígitos, secreto.
-
-REGLAS DE NEGOCIO
------------------
-  1. El saldo nunca puede ser negativo.
-  2. El NIP debe ser un string de exactamente 4 dígitos.
-  3. depositar(monto)         → suma al saldo, rechaza montos <= 0.
-  4. retirar(monto, nip)      → valida nip, valida saldo, retira.
-  5. consultar_saldo(nip)     → devuelve saldo SOLO si el nip es correcto.
-  6. str(cuenta)              → "Cuenta de Daniel · ****7890"
-                                (últimos 4 dígitos del número de cuenta).
-  7. Dos cuentas son iguales  → si tienen el mismo numero_cuenta.
 
 ================================================================
  LA RUTA DEL LIVE CODING (vamos paso por paso)
@@ -98,24 +87,57 @@ PASO 10 · Mover a paquetes (cuando ya funcione todo)
  ZONA DE LIVE CODING — empieza aquí, borra los TODO al avanzar
 ================================================================
 """
-
+"""
+REGLAS DE NEGOCIO
+-----------------
+  1. El saldo nunca puede ser negativo.
+  2. El NIP debe ser un string de exactamente 4 dígitos.
+  3. depositar(monto)         → suma al saldo, rechaza montos <= 0.
+  4. retirar(monto, nip)      → valida nip, valida saldo, retira.
+  5. consultar_saldo(nip)     → devuelve saldo SOLO si el nip es correcto.
+  6. str(cuenta)              → "Cuenta de Daniel · ****7890"
+                                (últimos 4 dígitos del número de cuenta).
+  7. Dos cuentas son iguales  → si tienen el mismo numero_cuenta.
+"""
 
 class CuentaBancaria:
     """TODO Paso 1 → 9: construir aquí, paso a paso, frente a la clase."""
 
     def __init__(self, titular, numero_cuenta, nip, saldo_inicial=0):
-        # TODO Paso 1: guarda los atributos tal cual los recibes.
-        # TODO Paso 2: renómbralos a _protegido / __privado.
-        # TODO Paso 3: agrega validaciones.
-        pass
 
-    # TODO Paso 4: def depositar(self, monto): ...
-    # TODO Paso 5: def _validar_nip(self, nip): ...
-    # TODO Paso 6: def retirar(self, monto, nip): ...
-    # TODO Paso 7: def consultar_saldo(self, nip): ...
-    # TODO Paso 8: def __str__(self): ...
-    # TODO Paso 9: def __eq__(self, otra): ...
-    # TODO Paso 9: def __hash__(self): ...
+        #setear saldo inicial
+        if saldo_inicial >= 0:
+            self.__saldo = saldo_inicial
+        else:
+            raise ValueError("No se aperturar una cuenta con saldo negativo.")
+
+        #setear nip
+        if type(nip) == str and len(nip) == 4:
+            self.__nip = nip
+        else:
+            raise ValueError("El nip debe ser un string y exactamente 4 caracteres.")
+        self.titular = titular
+        self._numero_cuenta = numero_cuenta
+
+    def depositar(self, monto):
+        if monto <= 0:
+            raise ValueError("El monto debe ser mayor a 0.")
+        else:
+            self.__saldo += monto
+
+    def getSaldo(self):
+        return self.__saldo 
+
+    def setSaldo(self, saldoNuevo):
+        self.__saldo = saldoNuevo
+
+    def __str__(self):
+        return f"El usuario es {self.titular}, tiene {self.__saldo}, tu nip es {self.__nip}"
+    
+    def __hash__(self):
+        print("Hashing... {self.titular}")
+        print("hash(self.titular):", hash(self.titular))
+        return hash(self.titular)
 
 
 # ================================================================
@@ -127,6 +149,10 @@ if __name__ == "__main__":
     print("=" * 50)
     print(" Demo · Banco")
     print("=" * 50)
+    usuario1 = CuentaBancaria("Juan", 1234567, "4560", 0)
+    usuario2 = CuentaBancaria("Juan", "1234567", "4560", 0)
+    
+    print(usuario1.__hash__() == usuario2.__hash__())  # True (mismo número de cuenta)
 
     # ---- Paso 1-3 ----
     # cuenta = CuentaBancaria("Daniel", "1234567890", "4242", saldo_inicial=1000)
