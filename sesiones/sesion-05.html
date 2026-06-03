@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión V — Lo Pythónico — Programación Avanzada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EFE6D2;--paper-deep:#E6DBC2;--ink:#2A1D14;--ink-soft:#4A3A2C;--blood:#A02418;--blood-dark:#6E1810;--ochre:#B5852A;--olive:#5D6638;--line:rgba(42,29,20,.18);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:'Crimson Pro',Georgia,serif;font-size:18px;line-height:1.6;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.11 0 0 0 0 0.08 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.35' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.13 0 0 0 0 0.08 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;mix-blend-mode:multiply;}
+
+.course-nav{position:sticky;top:0;z-index:999;background:rgba(239,230,210,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;}
+.course-nav a{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:var(--ink-soft);transition:color .2s;}
+.course-nav a:hover{color:var(--blood);}
+.course-nav a.back::before{content:'← ';color:var(--blood);}
+.course-nav a.next::after{content:' →';color:var(--blood);}
+.course-nav .session-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(42,29,20,.4);}
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--blood);z-index:1001;width:0;}
+
+section{position:relative;padding:5rem 2rem;}
+.wrap{max-width:1080px;margin:0 auto;}
+.wrap-n{max-width:720px;margin:0 auto;}
+.marker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--blood);margin-bottom:1rem;display:flex;align-items:center;gap:1rem;}
+.marker::after{content:'';flex:1;height:1px;background:var(--line);}
+
+/* Hero */
+.hero{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:4rem 2rem;overflow:hidden;position:relative;}
+.hero-float{position:absolute;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--blood);opacity:.13;letter-spacing:.05em;pointer-events:none;white-space:nowrap;animation:floaty 14s ease-in-out infinite;}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(var(--r,0deg));}50%{transform:translateY(-22px) rotate(var(--r,0deg));}}
+.hero-inner{position:relative;z-index:2;max-width:1080px;margin:0 auto;width:100%;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(42,29,20,.5);margin-bottom:1.5rem;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(3rem,8vw,7rem);line-height:.98;letter-spacing:-.03em;color:var(--ink);}
+.hero h1 em{font-style:italic;color:var(--blood);}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.2rem,2.5vw,1.8rem);color:var(--ink-soft);margin-top:1.5rem;max-width:650px;}
+
+.lead{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:500;line-height:1.25;letter-spacing:-.01em;color:var(--ink);}
+.lead em{font-style:italic;color:var(--blood);}
+.subtle{font-size:1.05rem;color:var(--ink-soft);margin-top:1rem;max-width:640px;}
+
+.widget{background:var(--paper-deep);border:1px solid var(--line);border-left:3px solid var(--blood);padding:2.2rem;margin-top:2.5rem;position:relative;}
+.widget::before{content:attr(data-tag);position:absolute;top:-.7rem;left:1.8rem;background:var(--paper);padding:0 .9rem;font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.25em;text-transform:uppercase;color:var(--blood);}
+.w-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;padding:.6rem 1rem;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.btn:hover{border-color:var(--blood);color:var(--blood);}
+.btn.on{background:var(--blood);color:var(--paper);border-color:var(--blood);}
+
+/* Code shared tokens */
+.dark-code{background:var(--ink);padding:1.4rem;font-family:'JetBrains Mono',monospace;font-size:.76rem;line-height:1.9;color:var(--paper);}
+.dark-code .ln{white-space:pre;display:block;}
+.dark-code .kw{color:#D4956A;font-style:italic;}
+.dark-code .deco{color:#C9A961;font-weight:600;}
+.dark-code .self{color:#8EAF8B;font-weight:700;}
+.dark-code .str{color:#C9A961;}
+.dark-code .cm{color:rgba(239,230,210,.42);font-style:italic;}
+.dark-code .ty{color:#A6C2D6;}
+.dark-code .cls{color:var(--paper);font-weight:700;}
+
+/* ─── W1: ¿Qué es un decorador? ─────────────────── */
+.dec-content{min-height:280px;}
+.dec-syntax{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;}
+.dec-side-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.6rem;}
+.dec-equiv{font-family:'Cormorant Garamond',serif;font-size:3rem;color:var(--blood);font-weight:500;text-align:center;line-height:1;font-style:italic;}
+.dec-annot{display:grid;grid-template-columns:1.3fr 1fr;gap:1.2rem;align-items:stretch;}
+.dec-notes{display:flex;flex-direction:column;gap:.9rem;padding:1.4rem;background:var(--paper);border:1px solid var(--line);justify-content:center;}
+.dec-note{display:flex;gap:.8rem;align-items:flex-start;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;line-height:1.4;color:var(--ink-soft);}
+.dec-note .num{font-family:'JetBrains Mono',monospace;font-size:.7rem;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--blood);color:var(--paper);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-style:normal;}
+.dec-note strong{color:var(--ink);font-style:normal;font-weight:600;}
+.dec-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem;}
+.dec-item{padding:1.1rem 1.2rem;background:var(--paper);border:1px solid var(--line);border-left:2px solid var(--ochre);display:flex;flex-direction:column;gap:.4rem;}
+.dec-item-name{font-family:'JetBrains Mono',monospace;font-size:.92rem;color:var(--blood);font-weight:700;}
+.dec-item-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.95rem;color:var(--ink-soft);line-height:1.4;}
+.dec-item-desc em{color:var(--ink);font-style:italic;}
+/* color tokens — dark code background */
+.dark-code .t-deco{color:#E8B04A;font-weight:700;}
+.dark-code .t-func{color:#7FB3C9;font-weight:700;}
+.dark-code .t-env{color:#E09BA8;font-weight:700;}
+/* color tokens — light background (legend, trace, map) */
+.lc-deco{color:#B7791A;font-weight:700;}
+.lc-func{color:#3E6E86;font-weight:700;}
+.lc-env{color:#B85F6F;font-weight:700;}
+/* legend */
+.dec-legend{display:flex;flex-wrap:wrap;gap:1.4rem;margin-bottom:1.3rem;padding:.85rem 1.1rem;background:var(--paper);border:1px solid var(--line);}
+.dec-leg{display:flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink-soft);}
+.dec-leg .dot{width:.85rem;height:.85rem;border-radius:50%;flex-shrink:0;}
+.dec-leg .dot.deco{background:#B7791A;}
+.dec-leg .dot.func{background:#3E6E86;}
+.dec-leg .dot.env{background:#B85F6F;}
+/* mapping note under the equivalence */
+.dec-map{margin-top:1.3rem;text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;line-height:1.4;color:var(--ink-soft);}
+.dec-map strong{color:var(--blood);font-style:normal;}
+.dec-map em{color:var(--ink);}
+.dec-map code{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:.85rem;background:var(--paper);padding:.1rem .35rem;border:1px solid var(--line);color:var(--blood);}
+/* execution trace */
+.dec-trace{display:flex;flex-direction:column;gap:.7rem;padding:1.4rem;background:var(--paper);border:1px solid var(--line);justify-content:center;}
+.dec-trace-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--blood);margin-bottom:.3rem;}
+.dec-trace-step{display:flex;gap:.7rem;align-items:flex-start;font-family:'JetBrains Mono',monospace;font-size:.74rem;line-height:1.45;color:var(--ink-soft);}
+.dec-trace-step .tn{width:1.5rem;height:1.5rem;border-radius:50%;background:var(--ink);color:var(--paper);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:.66rem;}
+/* definition callout */
+.def-box{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--ochre);padding:1.2rem 1.4rem;margin-top:1.5rem;}
+.def-term{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ochre);margin-bottom:.5rem;}
+.def-text{font-family:'Cormorant Garamond',serif;font-size:1.18rem;font-style:italic;line-height:1.45;color:var(--ink-soft);}
+.def-text strong{color:var(--ink);font-style:normal;font-weight:600;}
+.def-text code{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:.85rem;background:var(--paper-deep);padding:.1rem .35rem;border:1px solid var(--line);color:var(--blood);}
+
+/* ─── W2: Manual vs @property ───────────────────── */
+.prop-stage{display:grid;grid-template-columns:1.2fr 1fr;gap:1.5rem;align-items:stretch;}
+.prop-code{min-height:300px;}
+.prop-usage{background:var(--paper);border:1px solid var(--line);padding:1.4rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.9;display:flex;flex-direction:column;justify-content:center;}
+.prop-usage-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--line);}
+.prop-usage .ln{white-space:pre;display:block;color:var(--ink-soft);padding:.05rem .2rem;}
+.prop-usage .ln.hi{background:rgba(160,36,24,.07);border-left:2px solid var(--blood);padding-left:.5rem;color:var(--ink);font-weight:500;}
+.prop-usage .cm{color:rgba(42,29,20,.45);font-style:italic;}
+
+/* ─── W3: Three faces of @property ──────────────── */
+.cases-stage{display:grid;grid-template-columns:1.2fr 1fr;gap:1.5rem;align-items:stretch;}
+.cases-code{min-height:300px;}
+.cases-demo{background:var(--paper);border:1px solid var(--line);padding:1.4rem;display:flex;flex-direction:column;gap:.65rem;justify-content:center;}
+.cases-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem;padding-bottom:.5rem;border-bottom:1px solid var(--line);}
+.cases-test{padding:.55rem .8rem;border:1px solid var(--line);background:var(--paper-deep);font-family:'JetBrains Mono',monospace;font-size:.75rem;display:flex;justify-content:space-between;align-items:center;gap:.8rem;}
+.cases-test.ok{border-color:var(--olive);background:rgba(93,102,56,.07);}
+.cases-test.no{border-color:var(--blood);background:rgba(160,36,24,.06);}
+.cases-test.warn{border-color:var(--ochre);background:rgba(181,133,42,.08);}
+.cases-test .cmd{color:var(--ink);}
+.cases-test .res{font-weight:700;font-size:.78rem;text-align:right;}
+.cases-test.ok .res{color:var(--olive);}
+.cases-test.no .res{color:var(--blood);}
+.cases-test.warn .res{color:var(--ochre);}
+
+/* ─── W4: Prompt engineering ────────────────────── */
+.pe-stage{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:stretch;}
+.pe-prompt{background:var(--paper);border:1px solid var(--line);padding:1.4rem;display:flex;flex-direction:column;min-height:320px;}
+.pe-prompt-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.9rem;padding-bottom:.6rem;border-bottom:1px solid var(--line);}
+.pe-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;line-height:1.55;color:var(--ink);flex:1;}
+.pe-text .seg{display:inline;padding:.08rem .25rem;border-radius:2px;font-style:normal;font-weight:500;}
+.pe-text .rol{background:rgba(93,102,56,.18);color:var(--olive);}
+.pe-text .tarea{background:rgba(181,133,42,.18);color:#8a6420;}
+.pe-text .restr{background:rgba(160,36,24,.12);color:var(--blood);}
+.pe-text .fmt{background:rgba(42,29,20,.1);color:var(--ink);}
+.pe-anatomy{margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:.4rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;}
+.pe-anat{padding:.2rem .55rem;border-radius:3px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;}
+.pe-anat.rol{background:rgba(93,102,56,.2);color:var(--olive);}
+.pe-anat.tarea{background:rgba(181,133,42,.2);color:#8a6420;}
+.pe-anat.restr{background:rgba(160,36,24,.15);color:var(--blood);}
+.pe-anat.fmt{background:rgba(42,29,20,.12);color:var(--ink);}
+.pe-output{padding:1.4rem;font-size:.72rem;line-height:1.85;min-height:320px;overflow-y:auto;max-height:420px;}
+.pe-output-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ochre);margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid rgba(239,230,210,.15);}
+.pe-notes{margin-top:1rem;padding:.9rem 1.1rem;background:rgba(160,36,24,.06);border-left:2px solid var(--blood);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;line-height:1.4;color:var(--ink-soft);}
+.pe-notes.good{background:rgba(93,102,56,.08);border-left-color:var(--olive);}
+.pe-notes.good strong{color:var(--olive);}
+.pe-notes strong{color:var(--blood);font-style:normal;font-weight:600;}
+
+/* Taller */
+.taller{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--olive);padding:2rem;margin-top:2rem;}
+.taller-tag{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--olive);margin-bottom:1rem;}
+.taller-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.3rem;}
+.taller-step{background:var(--paper-deep);border:1px solid var(--line);padding:1.2rem;}
+.taller-step-n{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.8rem;color:var(--blood);line-height:1;margin-bottom:.5rem;}
+.taller-step-t{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--ink);margin-bottom:.3rem;}
+.taller-step-d{font-size:.92rem;color:var(--ink-soft);}
+.taller-step-d em{color:var(--ink);font-style:italic;}
+
+/* Cierre */
+.cierre{background:var(--paper-deep);}
+.tarea{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--ochre);padding:2rem;margin-top:2rem;}
+.tarea-tag{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--ochre);margin-bottom:1rem;}
+.tarea ol{margin-left:1.3rem;color:var(--ink-soft);}
+.tarea li{padding:.4rem 0;font-size:1.05rem;}
+.tarea li strong{color:var(--ink);}
+.tarea code{font-family:'JetBrains Mono',monospace;font-size:.85rem;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);}
+
+footer{padding:3rem 2rem;border-top:1px solid var(--line);text-align:center;}
+.foot-meta{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(42,29,20,.4);}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:860px){
+  section{padding:3.5rem 1.2rem;}
+  .prop-stage,.cases-stage,.pe-stage,.dec-syntax,.dec-annot{grid-template-columns:1fr;}
+  .taller-steps{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<nav class="course-nav">
+  <a href="sesion-04.html" class="back">Sesión 04</a>
+  <span class="session-label">Sesión 05 · 03.06.2026</span>
+  <a href="../index.html" class="next">Curso</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-float" style="top:14%;left:9%;--r:-4deg">@property</div>
+  <div class="hero-float" style="top:28%;right:11%;--r:3deg;animation-delay:-3s">@edad.setter</div>
+  <div class="hero-float" style="bottom:32%;left:13%;--r:2deg;animation-delay:-6s">ana.edad = 25</div>
+  <div class="hero-float" style="bottom:18%;right:14%;--r:-3deg;animation-delay:-9s">Actúa como senior Python developer...</div>
+  <div class="hero-float" style="top:50%;left:42%;--r:1deg;animation-delay:-4.5s"># Be Pythonic</div>
+  <div class="hero-inner">
+    <div class="hero-label">Sesión V · Lo Pythónico · Ref. Temario 1.3 · 1.4.2 · 1.4.3 · 1.6</div>
+    <h1>Lo<br><em>Pythónico.</em></h1>
+    <p class="hero-sub">Lo que escribiste en la Sesión 3 funciona. Hoy lo hacemos <em>elegante</em> — con @property. Y aprendemos a hablar con la IA <em>sin que nos engañe</em>.</p>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section>
+  <div class="wrap-n">
+    <p class="marker">I · Refinar</p>
+    <p class="lead">En programación, la elegancia <em>no es vanidad.</em><br>Es legibilidad, mantenimiento, y respeto a quien lee tu código mañana.</p>
+    <p class="subtle">Hoy refinamos los getters/setters manuales de la Sesión 3 con <strong style="color:var(--blood)">@property</strong> — el patrón pythónico que <em>parece atributo</em> y <em>actúa como método</em>. Y aprendemos a colaborar con IA generativa <em>con criterio</em>, no con fe.</p>
+  </div>
+</section>
+
+<!-- W1: ¿Qué es un decorador? -->
+<section>
+  <div class="wrap">
+    <p class="marker">II · ¿Qué es un <em style="font-style:italic">decorador?</em></p>
+    <p class="lead">Un <em>decorador</em> es una función que <em>envuelve</em> a otra<br>para añadirle algo sin tocarla.</p>
+    <p class="subtle">El símbolo <code style="font-family:'JetBrains Mono',monospace;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);font-size:.85rem">@</code> que verás antes de <code style="font-family:'JetBrains Mono',monospace;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);font-size:.85rem">property</code> es azúcar sintáctico — un atajo elegante para algo más largo. Vamos por partes:</p>
+    <div class="def-box">
+      <div class="def-term">¿Qué es "azúcar sintáctico"?</div>
+      <div class="def-text">Una forma de escribir algo <strong>más corta y bonita</strong> que hace <strong>exactamente lo mismo</strong> que la forma larga. No añade poder nuevo — solo lo hace más legible. Igual que <code>x += 1</code> es azúcar para <code>x = x + 1</code>, el <code>@gritar</code> es azúcar para <code>saludar = gritar(saludar)</code>.</div>
+    </div>
+    <div class="widget" data-tag="Tres ángulos · una idea">
+      <div class="dec-content" id="dec-content"></div>
+      <div class="w-controls">
+        <button class="btn on" data-pane="syntax">1 · El símbolo @</button>
+        <button class="btn" data-pane="inside">2 · Por dentro</button>
+        <button class="btn" data-pane="common">3 · Los más comunes</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W2: De manual a @property -->
+<section>
+  <div class="wrap">
+    <p class="marker">III · De manual a @property</p>
+    <p class="lead">Misma protección.<br><em>Sintaxis nueva.</em></p>
+    <p class="subtle">@property convierte un método en algo que se usa <em>como si fuera atributo</em>. Misma validación debajo, API natural arriba. Cambia el estilo y observa cómo cambia la forma de llamarlo:</p>
+    <div class="widget" data-tag="Cambia el estilo">
+      <div class="prop-stage">
+        <div class="prop-code dark-code" id="prop-code"></div>
+        <div class="prop-usage" id="prop-usage"></div>
+      </div>
+      <div class="w-controls">
+        <button class="btn on" id="prop-manual">Manual (Sesión 3)</button>
+        <button class="btn" id="prop-pythonic">@property (Sesión 5)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W3: Tres caras de @property -->
+<section>
+  <div class="wrap">
+    <p class="marker">IV · @property tiene <em style="font-style:italic">tres caras</em></p>
+    <p class="lead">El mismo decorador.<br>Validación. Solo lectura. <em>Computada.</em></p>
+    <p class="subtle">Elige una cara y mira qué operaciones funcionan y cuáles no:</p>
+    <div class="widget" data-tag="Tres usos · un patrón">
+      <div class="cases-stage">
+        <div class="cases-code dark-code" id="cases-code"></div>
+        <div class="cases-demo" id="cases-demo"></div>
+      </div>
+      <div class="w-controls">
+        <button class="btn on" data-case="valid">1 · Validación</button>
+        <button class="btn" data-case="readonly">2 · Solo lectura</button>
+        <button class="btn" data-case="computed">3 · Computada</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W4: Prompt engineering -->
+<section>
+  <div class="wrap">
+    <p class="marker">V · Cómo hablar con la <em style="font-style:italic">IA</em></p>
+    <p class="lead">A la IA le pides bien,<br>o te entrega <em>basura elegante.</em></p>
+    <p class="subtle">No es magia: <strong style="color:var(--olive)">rol</strong>, <strong style="color:#8a6420">tarea clara</strong>, <strong style="color:var(--blood)">restricciones</strong>, <strong style="color:var(--ink)">formato</strong>. Compara tres prompts pidiendo lo mismo — una clase Persona:</p>
+    <div class="widget" data-tag="Compara los prompts">
+      <div class="pe-stage">
+        <div class="pe-prompt">
+          <div class="pe-prompt-tag" id="pe-tag">Nivel 1 · El prompt vago</div>
+          <div class="pe-text" id="pe-text"></div>
+          <div class="pe-anatomy" id="pe-anatomy"></div>
+        </div>
+        <div class="pe-output dark-code" id="pe-output"></div>
+      </div>
+      <div class="pe-notes" id="pe-notes"></div>
+      <div class="w-controls">
+        <button class="btn on" data-lvl="bad">Nivel 1 · Vago</button>
+        <button class="btn" data-lvl="mid">Nivel 2 · Decente</button>
+        <button class="btn" data-lvl="good">Nivel 3 · Profesional</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TALLER -->
+<section>
+  <div class="wrap">
+    <p class="marker">VI · Taller · en clase</p>
+    <p class="lead">Refactoriza con @property.<br>Pídele lo mismo a la IA.<br><em>Compara.</em></p>
+    <div class="taller">
+      <div class="taller-tag">Manos al teclado · 40 min</div>
+      <div class="taller-steps">
+        <div class="taller-step">
+          <div class="taller-step-n">1</div>
+          <div class="taller-step-t">Refactor</div>
+          <div class="taller-step-d">Toma tu clase de la Sesión 3 con <em>getters/setters manuales</em>. Convierte cada par en <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">@property</code> + <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">@X.setter</code>.</div>
+        </div>
+        <div class="taller-step">
+          <div class="taller-step-n">2</div>
+          <div class="taller-step-t">Pídelo a la IA</div>
+          <div class="taller-step-d">Escribe un <em>prompt nivel 3</em> (rol + tarea + restricciones + formato) pidiendo la misma clase. Guarda el resultado en otro archivo.</div>
+        </div>
+        <div class="taller-step">
+          <div class="taller-step-n">3</div>
+          <div class="taller-step-t">Compara</div>
+          <div class="taller-step-d">¿Qué hizo la IA <em>mejor</em> que tú? ¿Qué hiciste tú <em>mejor</em> que la IA? Escribe 3 diferencias como comentarios en el código.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CIERRE -->
+<section class="cierre">
+  <div class="wrap-n">
+    <p class="marker">VII · Para el viernes</p>
+    <p class="lead">La IA es tu colega, no tu reemplazo.<br>Si <em>no entiendes</em> su código,<br><em>no es tu código.</em></p>
+    <div class="tarea">
+      <div class="tarea-tag">Tarea · sube a tu repo</div>
+      <ol>
+        <li>Refactoriza tu clase principal usando <strong>@property</strong> en todos los atributos que requieran validación.</li>
+        <li>Identifica al menos <strong>una propiedad computada</strong> (algo que se calcula a partir de otros atributos).</li>
+        <li>Agrega un comentario al inicio del archivo con el <strong>prompt nivel 3</strong> que usarías para generar la clase desde cero con IA.</li>
+        <li>En el <code>README</code>: reflexiona en 3-5 líneas — <strong>¿en qué confías a la IA? ¿en qué no?</strong></li>
+        <li>Commit y push. El viernes empezamos con tipos y operadores.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-meta">Programación Avanzada · MCT158 · Carlos D. Vaca Ramírez · Unitec Atizapán 2026-3</div>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';});
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('section>.wrap,section>.wrap-n').forEach(el=>{el.classList.add('reveal');obs.observe(el);});
+const $=id=>document.getElementById(id);
+const L=html=>'<span class="ln">'+html+'</span>';
+
+// ─── W1: ¿Qué es un decorador? ──────────────────────────────
+const lcLegend='<div class="dec-legend">'+
+  '<div class="dec-leg"><span class="dot deco"></span><span class="lc-deco">gritar</span> · el decorador</div>'+
+  '<div class="dec-leg"><span class="dot func"></span><span class="lc-func">saludar / func</span> · la función original</div>'+
+  '<div class="dec-leg"><span class="dot env"></span><span class="lc-env">envoltura</span> · la función nueva</div>'+
+'</div>';
+const decPanes={
+  syntax:{
+    type:'syntax',
+    leftTag:'Con @ · azúcar sintáctico',
+    leftCode:[
+      '<span class="deco">@</span><span class="t-deco">gritar</span>',
+      '<span class="kw">def</span> <span class="t-func">saludar</span>():',
+      '    <span class="kw">return</span> <span class="str">"hola"</span>',
+    ],
+    rightTag:'Sin @ · lo que Python hace por debajo',
+    rightCode:[
+      '<span class="kw">def</span> <span class="t-func">saludar</span>():',
+      '    <span class="kw">return</span> <span class="str">"hola"</span>',
+      '',
+      '<span class="t-func">saludar</span> = <span class="t-deco">gritar</span>(<span class="t-func">saludar</span>)',
+    ],
+  },
+  inside:{
+    type:'inside',
+    code:[
+      '<span class="kw">def</span> <span class="t-deco">gritar</span>(<span class="t-func">func</span>):',
+      '    <span class="kw">def</span> <span class="t-env">envoltura</span>():',
+      '        resultado = <span class="t-func">func</span>()',
+      '        <span class="kw">return</span> resultado.upper() + <span class="str">"!!!"</span>',
+      '    <span class="kw">return</span> <span class="t-env">envoltura</span>',
+      '',
+      '<span class="deco">@</span><span class="t-deco">gritar</span>',
+      '<span class="kw">def</span> <span class="t-func">saludar</span>():',
+      '    <span class="kw">return</span> <span class="str">"hola"</span>',
+    ],
+    trace:[
+      ['1','Ve <span class="lc-deco">@gritar</span> escrito sobre <span class="lc-func">saludar</span>'],
+      ['2','Ejecuta en silencio:<br><span class="lc-func">saludar</span> = <span class="lc-deco">gritar</span>(<span class="lc-func">saludar</span>)'],
+      ['3','<span class="lc-deco">gritar</span> recibe la <span class="lc-func">saludar</span> original como <span class="lc-func">func</span>'],
+      ['4','<span class="lc-deco">gritar</span> arma la <span class="lc-env">envoltura</span> y la <span class="lc-env">devuelve</span>'],
+      ['5','El nombre <span class="lc-func">saludar</span> ahora apunta a la <span class="lc-env">envoltura</span>'],
+      ['6','<span class="lc-func">saludar</span>() corre <span class="lc-env">envoltura</span>() → "hola" → "HOLA!!!"'],
+    ],
+  },
+  common:{
+    type:'common',
+    items:[
+      ['@property','Método que <em>parece atributo</em>. Lo verás a continuación.'],
+      ['@staticmethod','Método de clase <em>sin self</em>. No accede a la instancia.'],
+      ['@classmethod','Método que recibe <em>cls</em>, no self. Para constructores alternos.'],
+      ['@dataclass','Genera <em>__init__</em>, <em>__repr__</em> y <em>__eq__</em> por ti.'],
+      ['@functools.cache','Guarda resultados anteriores — <em>memoización</em> gratis.'],
+      ['@pytest.fixture','Define setup reusable para pruebas automatizadas.'],
+    ],
+  }
+};
+function decRender(key){
+  const p=decPanes[key];
+  let html='';
+  if(p.type==='syntax'){
+    html=lcLegend+
+      '<div class="dec-syntax">'+
+        '<div><div class="dec-side-tag">'+p.leftTag+'</div><div class="dark-code">'+p.leftCode.map(L).join('')+'</div></div>'+
+        '<div class="dec-equiv">≡</div>'+
+        '<div><div class="dec-side-tag">'+p.rightTag+'</div><div class="dark-code">'+p.rightCode.map(L).join('')+'</div></div>'+
+      '</div>'+
+      '<div class="dec-map">El decorador <span class="lc-deco">@gritar</span> es <strong>literalmente</strong> <span class="lc-func">saludar</span> = <span class="lc-deco">gritar</span>(<span class="lc-func">saludar</span>). Eso es <em>todo</em> lo que hace el <code>@</code>.</div>';
+  } else if(p.type==='inside'){
+    html=lcLegend+
+      '<div class="dec-annot">'+
+        '<div class="dark-code">'+p.code.map(L).join('')+'</div>'+
+        '<div class="dec-trace"><div class="dec-trace-tag">Cómo Python lo llama</div>'+
+          p.trace.map(([n,t])=>'<div class="dec-trace-step"><span class="tn">'+n+'</span><span>'+t+'</span></div>').join('')+
+        '</div>'+
+      '</div>';
+  } else if(p.type==='common'){
+    html='<div class="dec-list">'+
+      p.items.map(([name,desc])=>'<div class="dec-item"><code class="dec-item-name">'+name+'</code><div class="dec-item-desc">'+desc+'</div></div>').join('')+
+    '</div>';
+  }
+  $('dec-content').innerHTML=html;
+}
+document.querySelectorAll('[data-pane]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-pane]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    decRender(b.dataset.pane);
+  });
+});
+decRender('syntax');
+
+// ─── W2: Manual vs @property ────────────────────────────────
+const propStates={
+  manual:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">Estudiante</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, edad):',
+      '        <span class="self">self</span>._edad = edad',
+      '',
+      '    <span class="kw">def</span> get_edad(<span class="self">self</span>):',
+      '        <span class="kw">return</span> <span class="self">self</span>._edad',
+      '',
+      '    <span class="kw">def</span> set_edad(<span class="self">self</span>, valor):',
+      '        <span class="kw">if</span> 0 &lt;= valor &lt;= 120:',
+      '            <span class="self">self</span>._edad = valor',
+      '        <span class="kw">else</span>:',
+      '            <span class="kw">raise</span> ValueError(<span class="str">"Edad inválida"</span>)',
+    ],
+    usage:[
+      ['ana = Estudiante(20)',''],
+      ['',''],
+      ['<span class="cm"># Para leer</span>',''],
+      ['edad = ana.get_edad()  <span class="cm"># método</span>','hi'],
+      ['',''],
+      ['<span class="cm"># Para cambiar</span>',''],
+      ['ana.set_edad(25)       <span class="cm"># método</span>','hi'],
+      ['',''],
+      ['<span class="cm"># Falla con validación</span>',''],
+      ['ana.set_edad(-5)       <span class="cm"># ValueError</span>',''],
+    ],
+    tag:'Forma manual · método al rescate'
+  },
+  pythonic:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">Estudiante</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, edad):',
+      '        <span class="self">self</span>._edad = edad',
+      '',
+      '    <span class="deco">@property</span>',
+      '    <span class="kw">def</span> edad(<span class="self">self</span>):',
+      '        <span class="kw">return</span> <span class="self">self</span>._edad',
+      '',
+      '    <span class="deco">@edad.setter</span>',
+      '    <span class="kw">def</span> edad(<span class="self">self</span>, valor):',
+      '        <span class="kw">if</span> 0 &lt;= valor &lt;= 120:',
+      '            <span class="self">self</span>._edad = valor',
+      '        <span class="kw">else</span>:',
+      '            <span class="kw">raise</span> ValueError(<span class="str">"Edad inválida"</span>)',
+    ],
+    usage:[
+      ['ana = Estudiante(20)',''],
+      ['',''],
+      ['<span class="cm"># Para leer</span>',''],
+      ['edad = ana.edad        <span class="cm"># ¡atributo!</span>','hi'],
+      ['',''],
+      ['<span class="cm"># Para cambiar</span>',''],
+      ['ana.edad = 25          <span class="cm"># ¡atributo!</span>','hi'],
+      ['',''],
+      ['<span class="cm"># Falla con validación</span>',''],
+      ['ana.edad = -5          <span class="cm"># ValueError</span>',''],
+    ],
+    tag:'Forma @property · parece atributo, actúa como método'
+  }
+};
+function propRender(state){
+  const s=propStates[state];
+  $('prop-code').innerHTML=s.code.map(L).join('');
+  $('prop-usage').innerHTML='<div class="prop-usage-tag">'+s.tag+'</div>'+
+    s.usage.map(([html,cls])=>'<span class="ln '+cls+'">'+html+'</span>').join('');
+}
+$('prop-manual').addEventListener('click',()=>{$('prop-manual').classList.add('on');$('prop-pythonic').classList.remove('on');propRender('manual');});
+$('prop-pythonic').addEventListener('click',()=>{$('prop-pythonic').classList.add('on');$('prop-manual').classList.remove('on');propRender('pythonic');});
+propRender('manual');
+
+// ─── W3: Three faces of @property ────────────────────────────
+const casesData={
+  valid:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">Estudiante</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, edad):',
+      '        <span class="self">self</span>._edad = edad',
+      '',
+      '    <span class="deco">@property</span>',
+      '    <span class="kw">def</span> edad(<span class="self">self</span>):',
+      '        <span class="kw">return</span> <span class="self">self</span>._edad',
+      '',
+      '    <span class="deco">@edad.setter</span>',
+      '    <span class="kw">def</span> edad(<span class="self">self</span>, v):',
+      '        <span class="kw">if</span> 0 &lt;= v &lt;= 120:',
+      '            <span class="self">self</span>._edad = v',
+      '        <span class="kw">else</span>:',
+      '            <span class="kw">raise</span> ValueError(',
+      '                <span class="str">"Edad fuera de rango"</span>)',
+    ],
+    tag:'Validación · setter como guardia',
+    tests:[
+      {cls:'ok', cmd:'ana.edad = 25', res:'✓ self._edad = 25'},
+      {cls:'no', cmd:'ana.edad = 200', res:'✗ ValueError'},
+      {cls:'no', cmd:'ana.edad = -5', res:'✗ ValueError'},
+    ]
+  },
+  readonly:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">Estudiante</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, id):',
+      '        <span class="self">self</span>._id = id',
+      '',
+      '    <span class="deco">@property</span>',
+      '    <span class="kw">def</span> id(<span class="self">self</span>):',
+      '        <span class="kw">return</span> <span class="self">self</span>._id',
+      '',
+      '    <span class="cm"># sin @id.setter</span>',
+      '    <span class="cm"># → id es de solo lectura</span>',
+    ],
+    tag:'Solo lectura · sin setter',
+    tests:[
+      {cls:'ok', cmd:'ana.id', res:'→ 1042'},
+      {cls:'no', cmd:'ana.id = 9999', res:'✗ AttributeError'},
+      {cls:'warn', cmd:'ana._id = 9999', res:'⚠ funciona, pero rompes el contrato'},
+    ]
+  },
+  computed:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">Estudiante</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, nombre, apellido):',
+      '        <span class="self">self</span>.nombre = nombre',
+      '        <span class="self">self</span>.apellido = apellido',
+      '',
+      '    <span class="deco">@property</span>',
+      '    <span class="kw">def</span> nombre_completo(<span class="self">self</span>):',
+      '        <span class="kw">return</span> <span class="str">f"{self.nombre} {self.apellido}"</span>',
+      '',
+      '    <span class="cm"># se recalcula sola al consultar</span>',
+    ],
+    tag:'Computada · derivada de otros atributos',
+    tests:[
+      {cls:'ok', cmd:'ana.nombre_completo', res:'→ "Ana García"'},
+      {cls:'ok', cmd:'ana.nombre = "Sofía"', res:'✓ cambió nombre'},
+      {cls:'ok', cmd:'ana.nombre_completo', res:'→ "Sofía García"  (auto)'},
+      {cls:'no', cmd:'ana.nombre_completo = "X"', res:'✗ AttributeError'},
+    ]
+  }
+};
+function casesRender(key){
+  const c=casesData[key];
+  $('cases-code').innerHTML=c.code.map(L).join('');
+  $('cases-demo').innerHTML='<div class="cases-tag">'+c.tag+'</div>'+
+    c.tests.map(t=>'<div class="cases-test '+t.cls+'"><span class="cmd">'+t.cmd+'</span><span class="res">'+t.res+'</span></div>').join('');
+}
+document.querySelectorAll('[data-case]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-case]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    casesRender(b.dataset.case);
+  });
+});
+casesRender('valid');
+
+// ─── W4: Prompt engineering ──────────────────────────────────
+const promptLevels={
+  bad:{
+    tag:'Nivel 1 · El prompt vago',
+    text:'"haz una clase persona"',
+    anatomy:[],
+    output:[
+      '<span class="kw">class</span> <span class="cls">Persona</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, name, age):',
+      '        <span class="self">self</span>.name = name',
+      '        <span class="self">self</span>.age = age',
+      '',
+      '    <span class="kw">def</span> greet(<span class="self">self</span>):',
+      '        <span class="kw">print</span>(<span class="str">f"Hi, I\'m {self.name}"</span>)',
+    ],
+    notesCls:'',
+    notes:'<strong>Sin contexto, la IA inventa.</strong> Inglés/español mezclado. Cero validación. Cero tipos. Cero protección. Cero documentación. Y peor: parece "que ya está".'
+  },
+  mid:{
+    tag:'Nivel 2 · El prompt decente',
+    text:'"Crea una clase Persona en Python con nombre y edad. Valida que la edad sea positiva."',
+    anatomy:[],
+    output:[
+      '<span class="kw">class</span> <span class="cls">Persona</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, nombre, edad):',
+      '        <span class="kw">if</span> edad &lt; 0:',
+      '            <span class="kw">raise</span> ValueError(<span class="str">"edad inválida"</span>)',
+      '        <span class="self">self</span>.nombre = nombre',
+      '        <span class="self">self</span>.edad = edad',
+    ],
+    notesCls:'',
+    notes:'<strong>Mejor.</strong> Hay validación, pero solo en <code style="font-family:JetBrains Mono;color:var(--blood)">__init__</code>. Si haces <code style="font-family:JetBrains Mono;color:var(--blood)">ana.edad = -5</code> después, no valida nada. Sin tipos, sin <code style="font-family:JetBrains Mono;color:var(--blood)">@property</code>, sin <code style="font-family:JetBrains Mono;color:var(--blood)">__str__</code>.'
+  },
+  good:{
+    tag:'Nivel 3 · El prompt profesional',
+    text:'<span class="seg rol">Actúa como senior Python developer.</span> <span class="seg tarea">Crea una clase <code>Persona</code> con atributos <code>nombre: str</code> y <code>edad: int</code>.</span> <span class="seg restr">Usa @property para edad con validación 0–120 que lance ValueError. Type hints completos.</span> <span class="seg fmt">Incluye __str__ legible y docstring PEP 257. Sigue PEP 8.</span>',
+    anatomy:[
+      ['rol','Rol'],['tarea','Tarea'],['restr','Restricciones'],['fmt','Formato']
+    ],
+    output:[
+      '<span class="kw">class</span> <span class="cls">Persona</span>:',
+      '    <span class="str">"""Representa a una persona con nombre y edad.</span>',
+      '<span class="str">    </span>',
+      '<span class="str">    Args:</span>',
+      '<span class="str">        nombre: Nombre completo.</span>',
+      '<span class="str">        edad: Edad en años (0-120).</span>',
+      '<span class="str">    """</span>',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, nombre: <span class="ty">str</span>, edad: <span class="ty">int</span>) -&gt; <span class="ty">None</span>:',
+      '        <span class="self">self</span>.nombre = nombre',
+      '        <span class="self">self</span>.edad = edad  <span class="cm"># delega validación</span>',
+      '',
+      '    <span class="deco">@property</span>',
+      '    <span class="kw">def</span> edad(<span class="self">self</span>) -&gt; <span class="ty">int</span>:',
+      '        <span class="kw">return</span> <span class="self">self</span>._edad',
+      '',
+      '    <span class="deco">@edad.setter</span>',
+      '    <span class="kw">def</span> edad(<span class="self">self</span>, valor: <span class="ty">int</span>) -&gt; <span class="ty">None</span>:',
+      '        <span class="kw">if</span> <span class="kw">not</span> 0 &lt;= valor &lt;= 120:',
+      '            <span class="kw">raise</span> ValueError(',
+      '                <span class="str">f"Edad fuera de rango: {valor}"</span>)',
+      '        <span class="self">self</span>._edad = valor',
+      '',
+      '    <span class="kw">def</span> __str__(<span class="self">self</span>) -&gt; <span class="ty">str</span>:',
+      '        <span class="kw">return</span> <span class="str">f"Persona({self.nombre}, {self.edad})"</span>',
+    ],
+    notesCls:'good',
+    notes:'<strong>Esto es código de producción.</strong> Type hints. <code style="font-family:JetBrains Mono;color:var(--blood)">@property</code> con validación real. <code style="font-family:JetBrains Mono;color:var(--blood)">__str__</code> legible. Docstring PEP 257. La IA es tan buena como tu prompt — no más, no menos.'
+  }
+};
+function peRender(lvl){
+  const p=promptLevels[lvl];
+  $('pe-tag').textContent=p.tag;
+  $('pe-text').innerHTML=p.text;
+  $('pe-anatomy').innerHTML=p.anatomy.length?p.anatomy.map(([c,l])=>'<span class="pe-anat '+c+'">'+l+'</span>').join(''):'';
+  $('pe-output').innerHTML='<div class="pe-output-tag">Respuesta de la IA</div>'+p.output.map(L).join('');
+  $('pe-notes').className='pe-notes '+p.notesCls;
+  $('pe-notes').innerHTML=p.notes;
+}
+document.querySelectorAll('[data-lvl]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-lvl]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    peRender(b.dataset.lvl);
+  });
+});
+peRender('bad');
+</script>
+</body>
+</html>
