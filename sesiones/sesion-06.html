@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión VI — La clase que habla con la IA — Programación Avanzada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EFE6D2;--paper-deep:#E6DBC2;--ink:#2A1D14;--ink-soft:#4A3A2C;--blood:#A02418;--blood-dark:#6E1810;--ochre:#B5852A;--olive:#5D6638;--line:rgba(42,29,20,.18);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:'Crimson Pro',Georgia,serif;font-size:18px;line-height:1.6;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.11 0 0 0 0 0.08 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.35' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.13 0 0 0 0 0.08 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;mix-blend-mode:multiply;}
+
+.course-nav{position:sticky;top:0;z-index:999;background:rgba(239,230,210,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;}
+.course-nav a{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:var(--ink-soft);transition:color .2s;}
+.course-nav a:hover{color:var(--blood);}
+.course-nav a.back::before{content:'← ';color:var(--blood);}
+.course-nav a.next::after{content:' →';color:var(--blood);}
+.course-nav .session-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(42,29,20,.4);}
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--blood);z-index:1001;width:0;}
+
+section{position:relative;padding:5rem 2rem;}
+.wrap{max-width:1080px;margin:0 auto;}
+.wrap-n{max-width:720px;margin:0 auto;}
+.marker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--blood);margin-bottom:1rem;display:flex;align-items:center;gap:1rem;}
+.marker::after{content:'';flex:1;height:1px;background:var(--line);}
+
+/* Hero */
+.hero{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:4rem 2rem;overflow:hidden;position:relative;}
+.hero-float{position:absolute;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--blood);opacity:.13;letter-spacing:.05em;pointer-events:none;white-space:nowrap;animation:floaty 14s ease-in-out infinite;}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(var(--r,0deg));}50%{transform:translateY(-22px) rotate(var(--r,0deg));}}
+.hero-inner{position:relative;z-index:2;max-width:1080px;margin:0 auto;width:100%;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(42,29,20,.5);margin-bottom:1.5rem;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(2.6rem,7vw,6rem);line-height:.98;letter-spacing:-.03em;color:var(--ink);}
+.hero h1 em{font-style:italic;color:var(--blood);}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.2rem,2.5vw,1.8rem);color:var(--ink-soft);margin-top:1.5rem;max-width:650px;}
+
+.lead{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:500;line-height:1.25;letter-spacing:-.01em;color:var(--ink);}
+.lead em{font-style:italic;color:var(--blood);}
+.subtle{font-size:1.05rem;color:var(--ink-soft);margin-top:1rem;max-width:660px;}
+.inlinecode{font-family:'JetBrains Mono',monospace;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);font-size:.85rem;}
+
+.widget{background:var(--paper-deep);border:1px solid var(--line);border-left:3px solid var(--blood);padding:2.2rem;margin-top:2.5rem;position:relative;}
+.widget::before{content:attr(data-tag);position:absolute;top:-.7rem;left:1.8rem;background:var(--paper);padding:0 .9rem;font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.25em;text-transform:uppercase;color:var(--blood);}
+.w-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;padding:.6rem 1rem;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.btn:hover{border-color:var(--blood);color:var(--blood);}
+.btn.on{background:var(--blood);color:var(--paper);border-color:var(--blood);}
+.btn-olive.on{background:var(--olive);border-color:var(--olive);}
+
+/* shared dark code */
+.dark-code{background:var(--ink);padding:1.4rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.9;color:var(--paper);}
+.dark-code .ln{white-space:pre;display:block;border-radius:2px;padding:0 .25rem;transition:background .35s;}
+.dark-code .ln.new{background:rgba(181,133,42,.28);}
+.dark-code .kw{color:#D4956A;font-style:italic;}
+.dark-code .deco{color:#C9A961;font-weight:600;}
+.dark-code .self{color:#8EAF8B;font-weight:700;}
+.dark-code .str{color:#C9A961;}
+.dark-code .cm{color:rgba(239,230,210,.45);font-style:italic;}
+.dark-code .cls{color:var(--paper);font-weight:700;}
+
+/* ─── W1: token peligro ───────────────────────── */
+.tok-stage{display:grid;grid-template-columns:1.1fr 1fr;gap:1.5rem;align-items:stretch;}
+.tok-code{min-height:230px;}
+.tok-term{background:var(--paper);border:1px solid var(--line);padding:1.4rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;display:flex;flex-direction:column;justify-content:center;}
+.tok-term-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(42,29,20,.4);margin-bottom:.9rem;}
+.tok-cmd{color:var(--ink);}
+.tok-cmd::before{content:'>>> ';color:var(--olive);}
+.tok-out{margin-top:.7rem;font-size:.85rem;word-break:break-all;padding:.6rem .8rem;transition:all .4s;}
+.tok-out.danger{color:var(--blood);background:rgba(160,36,24,.08);border-left:2px solid var(--blood);}
+.tok-out.safe{color:var(--olive);background:rgba(93,102,56,.08);border-left:2px solid var(--olive);}
+.tok-verdict{margin-top:1rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;min-height:1.6rem;}
+.tok-verdict.danger{color:var(--blood);}
+.tok-verdict.safe{color:var(--olive);}
+
+/* ─── W2: stepper ─────────────────────────────── */
+.step-stage{display:grid;grid-template-columns:1.2fr 1fr;gap:1.5rem;align-items:stretch;}
+.step-code{min-height:320px;}
+.step-panel{background:var(--ink);padding:1.5rem;display:flex;flex-direction:column;gap:.8rem;}
+.step-tema{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ochre);}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--paper);line-height:1.1;}
+.step-title em{font-style:italic;color:#E8B04A;}
+.step-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;line-height:1.45;color:rgba(239,230,210,.82);margin-top:auto;}
+.step-desc code{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:.82rem;color:#D4956A;background:rgba(239,230,210,.08);padding:.1rem .3rem;border-radius:2px;}
+.step-dots{display:flex;gap:.4rem;margin-top:.5rem;}
+.step-dot{width:.6rem;height:.6rem;border-radius:50%;background:rgba(239,230,210,.25);transition:all .3s;}
+.step-dot.on{background:#E8B04A;}
+
+/* ─── W3: enviar ──────────────────────────────── */
+.snd-stage{display:grid;grid-template-columns:1.1fr 1fr;gap:1.5rem;align-items:stretch;}
+.snd-code{min-height:230px;}
+.snd-right{display:flex;flex-direction:column;gap:1rem;}
+.snd-box{background:var(--paper);border:1px solid var(--line);padding:1.3rem;}
+.snd-box-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(42,29,20,.4);margin-bottom:.7rem;}
+.snd-input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:.7rem .9rem;background:var(--paper-deep);border:1px solid var(--line);color:var(--ink);resize:none;}
+.snd-input:focus{outline:none;border-color:var(--olive);}
+.snd-out{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--olive);min-height:2.4rem;padding:.6rem .8rem;background:rgba(93,102,56,.07);border-left:2px solid var(--olive);margin-top:.8rem;word-break:break-word;}
+.snd-out.err{color:var(--blood);background:rgba(160,36,24,.07);border-left-color:var(--blood);}
+.snd-carrot{background:rgba(181,133,42,.1);border:1px dashed var(--ochre);padding:1.1rem 1.3rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;line-height:1.45;color:var(--ink-soft);}
+.snd-carrot strong{color:var(--ochre);font-style:normal;font-weight:600;}
+
+/* ─── W4: repaso anatomía ─────────────────────── */
+.rev-stage{display:grid;grid-template-columns:1.2fr 1fr;gap:1.5rem;align-items:start;}
+.rev-code{min-height:340px;}
+.rev-code .t{cursor:pointer;border-radius:2px;padding:.02rem .15rem;transition:all .2s;border-bottom:1.5px dashed transparent;}
+.rev-code .t:hover{border-bottom-color:#E8B04A;background:rgba(232,176,74,.12);}
+.rev-code .t.active{background:#E8B04A;color:var(--ink)!important;}
+.rev-panel{background:var(--paper);border:1px solid var(--line);padding:1.5rem;position:sticky;top:5rem;min-height:200px;}
+.rev-tema{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--blood);margin-bottom:.7rem;}
+.rev-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--ink);margin-bottom:.7rem;line-height:1.1;}
+.rev-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;line-height:1.5;color:var(--ink-soft);}
+.rev-desc strong{color:var(--ink);font-style:normal;font-weight:600;}
+
+/* Cierre / tarea */
+.cierre{background:var(--paper-deep);}
+.tarea{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--ochre);padding:2rem;margin-top:2rem;}
+.tarea-tag{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--ochre);margin-bottom:1rem;}
+.tarea ol{margin-left:1.3rem;color:var(--ink-soft);}
+.tarea li{padding:.4rem 0;font-size:1.05rem;}
+.tarea li strong{color:var(--ink);}
+.tarea code{font-family:'JetBrains Mono',monospace;font-size:.85rem;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);}
+
+footer{padding:3rem 2rem;border-top:1px solid var(--line);text-align:center;}
+.foot-meta{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(42,29,20,.4);}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+.dark-code .ty{color:#A6C2D6;}
+
+/* ─── W5: Constructores ───────────────────────── */
+.ctor-stage{display:grid;grid-template-columns:1.2fr 1fr;gap:1.5rem;align-items:stretch;}
+.ctor-code{min-height:300px;}
+.ctor-note{background:var(--paper);border:1px solid var(--line);padding:1.5rem;display:flex;flex-direction:column;justify-content:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.18rem;line-height:1.5;color:var(--ink-soft);}
+.ctor-note strong{color:var(--ink);font-style:normal;font-weight:600;}
+.ctor-note code{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:.82rem;background:var(--paper-deep);padding:.1rem .3rem;border:1px solid var(--line);color:var(--blood);}
+.ctor-warn{background:rgba(160,36,24,.06);border:1px dashed var(--blood);padding:1.2rem 1.4rem;margin-top:1.5rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.08rem;line-height:1.45;color:var(--ink-soft);}
+.ctor-warn strong{color:var(--blood);font-style:normal;font-weight:600;}
+.ctor-warn code{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:.82rem;background:var(--paper);padding:.1rem .3rem;border:1px solid var(--line);color:var(--blood);}
+
+/* ─── W6: dataclass ───────────────────────────── */
+.dc-code{min-height:200px;}
+.dc-result{margin-top:1.3rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;line-height:1.45;color:var(--ink-soft);padding:1rem 1.3rem;background:rgba(93,102,56,.07);border-left:2px solid var(--olive);}
+.dc-result strong{color:var(--olive);font-style:normal;font-weight:600;}
+.dc-result code{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:.82rem;color:var(--blood);}
+.dun-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem;}
+.dun-card{background:var(--paper-deep);border:1px solid var(--line);border-left:3px solid var(--ochre);padding:1.5rem;}
+.dun-card-name{font-family:'JetBrains Mono',monospace;font-size:1.15rem;color:var(--blood);font-weight:700;margin-bottom:1rem;}
+.dun-row{font-family:'JetBrains Mono',monospace;font-size:.74rem;margin:.6rem 0;padding:.6rem .8rem;line-height:1.55;}
+.dun-row .lbl{display:block;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem;}
+.dun-row.before{background:rgba(160,36,24,.06);border-left:2px solid var(--blood);color:var(--ink-soft);}
+.dun-row.before .lbl{color:var(--blood);}
+.dun-row.after{background:rgba(93,102,56,.08);border-left:2px solid var(--olive);color:var(--ink);}
+.dun-row.after .lbl{color:var(--olive);}
+.dun-note{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.02rem;line-height:1.5;color:var(--ink-soft);margin-top:1.1rem;}
+.dun-note strong{color:var(--ink);font-style:normal;font-weight:600;}
+.dun-note code{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:.8rem;background:var(--paper);padding:.1rem .3rem;border:1px solid var(--line);color:var(--blood);}
+
+/* ─── W7: tabla de decisión ───────────────────── */
+.dt-wrap{overflow-x:auto;}
+.dt-table{width:100%;border-collapse:collapse;min-width:640px;}
+.dt-table th{background:var(--ink);color:var(--paper);font-family:'JetBrains Mono',monospace;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;padding:.85rem 1rem;text-align:left;}
+.dt-table td{padding:1rem;border-bottom:1px solid var(--line);vertical-align:top;font-size:.98rem;color:var(--ink-soft);line-height:1.4;}
+.dt-table tr:last-child td{border-bottom:none;}
+.dt-table .tool{font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--blood);font-weight:700;display:block;margin-bottom:.25rem;}
+.dt-table .tool-sub{font-family:'Crimson Pro',serif;font-style:italic;font-size:.85rem;color:rgba(42,29,20,.5);}
+.dt-table .ex{font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--olive);}
+.dt-table tbody tr:nth-child(even){background:rgba(42,29,20,.025);}
+
+@media(max-width:860px){
+  section{padding:3.5rem 1.2rem;}
+  .tok-stage,.step-stage,.snd-stage,.rev-stage,.ctor-stage,.dun-grid{grid-template-columns:1fr;}
+  .rev-panel{position:relative;top:0;}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<nav class="course-nav">
+  <a href="sesion-05.html" class="back">Sesión 05</a>
+  <span class="session-label">Sesión 06 · 05.06.2026</span>
+  <a href="../index.html" class="next">Curso</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-float" style="top:14%;left:9%;--r:-4deg">class ClienteAPI:</div>
+  <div class="hero-float" style="top:28%;right:11%;--r:3deg;animation-delay:-3s">self._token = token</div>
+  <div class="hero-float" style="bottom:32%;left:13%;--r:2deg;animation-delay:-6s">@token.setter</div>
+  <div class="hero-float" style="bottom:18%;right:14%;--r:-3deg;animation-delay:-9s">api.enviar(prompt)</div>
+  <div class="hero-float" style="top:50%;left:42%;--r:1deg;animation-delay:-4.5s"># el token es un secreto</div>
+  <div class="hero-inner">
+    <div class="hero-label">Sesión VI · Repaso aplicado · Ref. Temario 1.3 · 1.4 · 1.4.2 · 1.4.3</div>
+    <h1>La clase que<br>habla con la <em>IA.</em></h1>
+    <p class="hero-sub">Hoy construimos la clase que algún día llamará a un modelo de IA. Pero antes de conectarla — <em>la conexión real viene después</em> — repasamos todo: constructor, encapsulamiento, getters y setters.</p>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section>
+  <div class="wrap-n">
+    <p class="marker">I · La idea</p>
+    <p class="lead">Una clase <em>ClienteAPI</em> guarda un token<br>y manda prompts a un modelo.</p>
+    <p class="subtle">Suena moderno — y lo es. Pero por dentro, no es más que lo que ya sabes: un <strong>constructor</strong> que recibe datos, un <strong>secreto encapsulado</strong> (el token), un <strong>getter</strong> que lo protege y un <strong>setter</strong> que lo valida. Hoy lo armamos pieza por pieza. La llamada real al modelo la dejamos para la Semana 13.</p>
+  </div>
+</section>
+
+<!-- W1: peligro del token -->
+<section>
+  <div class="wrap">
+    <p class="marker">II · El peligro de un token expuesto</p>
+    <p class="lead">Un token es como tu <em>contraseña.</em><br>¿Lo dejarías a la vista de todos?</p>
+    <p class="subtle">Si guardas el token con <span class="inlinecode">self.token = token</span> sin protección, cualquiera que imprima el objeto ve tu credencial completa. Compara qué pasa al hacer <span class="inlinecode">print(api.token)</span>:</p>
+    <div class="widget" data-tag="¿Expuesto o protegido?">
+      <div class="tok-stage">
+        <div class="tok-code dark-code" id="tok-code"></div>
+        <div class="tok-term">
+          <div class="tok-term-tag">Terminal</div>
+          <div class="tok-cmd">print(api.token)</div>
+          <div class="tok-out danger" id="tok-out"></div>
+          <div class="tok-verdict danger" id="tok-verdict"></div>
+        </div>
+      </div>
+      <div class="w-controls">
+        <button class="btn on" id="tok-sin">Sin protección</button>
+        <button class="btn btn-olive" id="tok-con">Con @property</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W2: construir pieza por pieza -->
+<section>
+  <div class="wrap">
+    <p class="marker">III · Construyamos <em style="font-style:italic">ClienteAPI</em></p>
+    <p class="lead">Cuatro pasos.<br>Cada uno, un <em>concepto del temario.</em></p>
+    <p class="subtle">Avanza paso a paso y mira cómo la clase crece. Lo que se agrega en cada paso se resalta:</p>
+    <div class="widget" data-tag="Paso a paso">
+      <div class="step-stage">
+        <div class="step-code dark-code" id="step-code"></div>
+        <div class="step-panel">
+          <div class="step-tema" id="step-tema"></div>
+          <div class="step-title" id="step-title"></div>
+          <div class="step-desc" id="step-desc"></div>
+          <div class="step-dots" id="step-dots"></div>
+        </div>
+      </div>
+      <div class="w-controls">
+        <button class="btn" id="step-prev">← Atrás</button>
+        <button class="btn on" id="step-next">Siguiente →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W3: enviar -->
+<section>
+  <div class="wrap">
+    <p class="marker">IV · El método <em style="font-style:italic">enviar</em></p>
+    <p class="lead">El método que <em>algún día</em><br>hablará con el modelo.</p>
+    <p class="subtle">Por ahora <span class="inlinecode">enviar()</span> valida el prompt y devuelve una respuesta simulada. La llamada HTTP real al LLM la conectamos en la Semana 13. Escribe un prompt y pruébalo:</p>
+    <div class="widget" data-tag="Pruébalo">
+      <div class="snd-stage">
+        <div class="snd-code dark-code" id="snd-code"></div>
+        <div class="snd-right">
+          <div class="snd-box">
+            <div class="snd-box-tag">api.enviar( prompt )</div>
+            <textarea class="snd-input" id="snd-input" rows="2" placeholder="Escribe un prompt...">Explícame qué es una clase</textarea>
+            <div class="w-controls" style="margin-top:.8rem">
+              <button class="btn on btn-olive" id="snd-run">▶ enviar()</button>
+              <button class="btn" id="snd-empty">Probar prompt vacío</button>
+            </div>
+            <div class="snd-out" id="snd-out"></div>
+          </div>
+          <div class="snd-carrot">
+            <strong>¿Y la conexión de verdad?</strong> Cuando hagas <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">api.enviar("...")</code> y de verdad responda Gemini o GPT — eso es la <strong>Semana 13</strong>. Hoy dominamos la clase que lo hará posible.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W4: repaso anatómico -->
+<section>
+  <div class="wrap">
+    <p class="marker">V · Cada pieza es un concepto</p>
+    <p class="lead">La clase completa.<br>Toca cada parte y mira <em>qué repasaste.</em></p>
+    <p class="subtle">Toda <em>ClienteAPI</em> es un repaso vivo de la unidad 1. Haz click en las partes resaltadas:</p>
+    <div class="widget" data-tag="Toca el código">
+      <div class="rev-stage">
+        <div class="rev-code dark-code" id="rev-code">
+<div class="ln"><span class="kw">class</span> <span class="cls">ClienteAPI</span>:</div>
+<div class="ln">    <span class="kw">def</span> <span class="t" data-r="init">__init__</span>(<span class="self">self</span>, token):</div>
+<div class="ln">        <span class="self">self</span>.token = token</div>
+<div class="ln"> </div>
+<div class="ln">    <span class="t" data-r="getter">@property</span></div>
+<div class="ln">    <span class="kw">def</span> token(<span class="self">self</span>):</div>
+<div class="ln">        <span class="kw">return</span> <span class="t" data-r="encap">self._token</span>[:7] + <span class="str">"..."</span> + <span class="self">self</span>._token[-4:]</div>
+<div class="ln"> </div>
+<div class="ln">    <span class="t" data-r="setter">@token.setter</span></div>
+<div class="ln">    <span class="kw">def</span> token(<span class="self">self</span>, valor):</div>
+<div class="ln">        <span class="kw">if</span> <span class="kw">not</span> valor <span class="kw">or</span> <span class="kw">len</span>(valor) &lt; 10:</div>
+<div class="ln">            <span class="kw">raise</span> ValueError(<span class="str">"Token inválido"</span>)</div>
+<div class="ln">        <span class="self">self</span>._token = valor</div>
+<div class="ln"> </div>
+<div class="ln">    <span class="kw">def</span> <span class="t" data-r="metodo">enviar</span>(<span class="self">self</span>, prompt):</div>
+<div class="ln">        <span class="kw">return</span> <span class="str">f"[respuesta a: {prompt}]"</span></div>
+        </div>
+        <div class="rev-panel">
+          <div class="rev-tema" id="rev-tema">Selecciona una pieza</div>
+          <div class="rev-title" id="rev-title">👆 Toca el código</div>
+          <div class="rev-desc" id="rev-desc">Cada parte resaltada corresponde a un tema de la unidad 1. Empieza por <strong>__init__</strong>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W5: Constructores -->
+<section>
+  <div class="wrap">
+    <p class="marker">VI · Constructores — las formas que existen</p>
+    <p class="lead">No todas las clases nacen igual.<br>Hay <em>cuatro formas</em> de construir.</p>
+    <p class="subtle">Desde una clase sin constructor hasta varios "constructores" alternos. Recorre las formas y lee qué hace cada una:</p>
+    <div class="widget" data-tag="Cuatro formas de construir">
+      <div class="ctor-stage">
+        <div class="ctor-code dark-code" id="ctor-code"></div>
+        <div class="ctor-note" id="ctor-note"></div>
+      </div>
+      <div class="w-controls">
+        <button class="btn on" data-ctor="sin">Sin __init__</button>
+        <button class="btn" data-ctor="con">Con __init__</button>
+        <button class="btn" data-ctor="defaults">Con defaults</button>
+        <button class="btn" data-ctor="factory">@classmethod</button>
+      </div>
+      <div class="ctor-warn"><strong>Ojo — esto confunde a quien viene de Java:</strong> Python <strong>no tiene sobrecarga de constructores</strong>. No puedes escribir dos <code>__init__</code> con firmas distintas — el segundo pisa al primero. La "sobrecarga" pythónica se logra de dos formas: con <strong>argumentos default</strong> (un constructor flexible que acepta distintos números de argumentos) y con <strong>factory methods</strong> usando <code>@classmethod</code> (constructores alternos, cada uno con su nombre).</div>
+    </div>
+  </div>
+</section>
+
+<!-- W6: dataclass -->
+<section>
+  <div class="wrap">
+    <p class="marker">VII · @dataclass — cuando Python escribe por ti</p>
+    <p class="lead">Si tu clase es solo <em>datos</em>,<br>no escribas el molde a mano.</p>
+    <p class="subtle">Compara la misma clase <span class="inlinecode">Punto</span> escrita a mano y con <span class="inlinecode">@dataclass</span>. Hacen <em>exactamente</em> lo mismo:</p>
+    <div class="widget" data-tag="Sin vs con @dataclass">
+      <div class="dc-code dark-code" id="dc-code"></div>
+      <div class="w-controls">
+        <button class="btn on" id="dc-sin">Sin @dataclass</button>
+        <button class="btn btn-olive" id="dc-con">Con @dataclass</button>
+      </div>
+      <div class="dc-result" id="dc-result"></div>
+    </div>
+
+    <p class="lead" style="margin-top:3rem;font-size:clamp(1.3rem,2.6vw,1.9rem)">¿Qué genera exactamente? Dos métodos clave:<br><em>__repr__</em> y <em>__eq__</em>.</p>
+    <div class="dun-grid">
+      <div class="dun-card">
+        <div class="dun-card-name">__repr__</div>
+        <div class="dun-row before"><span class="lbl">Sin definir</span>&gt;&gt;&gt; p<br>&lt;__main__.Punto object at 0x7f8b...&gt;</div>
+        <div class="dun-row after"><span class="lbl">Con __repr__ (o @dataclass)</span>&gt;&gt;&gt; p<br>Punto(x=3, y=5)</div>
+        <div class="dun-note">Es la representación <strong>oficial</strong> del objeto — la que ves en el REPL, al hacer debugging y al imprimir listas de objetos. Por convención debería poder <strong>recrear</strong> el objeto. Diferencia con <code>__str__</code>: <code>__str__</code> es para el usuario final (amigable); <code>__repr__</code> es para el desarrollador (sin ambigüedad). Si solo defines <code>__repr__</code>, Python lo usa para ambos.</div>
+      </div>
+      <div class="dun-card">
+        <div class="dun-card-name">__eq__</div>
+        <div class="dun-row before"><span class="lbl">Sin definir</span>&gt;&gt;&gt; p1 == p2<br>False  &nbsp;# aunque x, y sean iguales</div>
+        <div class="dun-row after"><span class="lbl">Con __eq__ (o @dataclass)</span>&gt;&gt;&gt; p1 == p2<br>True &nbsp;&nbsp;# compara los datos</div>
+        <div class="dun-note">Define qué significa <code>==</code>. Por defecto Python compara <strong>identidad</strong> (si son el mismo objeto en memoria), no contenido — por eso dos objetos idénticos dan <code>False</code>. Con <code>__eq__</code> comparas por <strong>datos</strong>. <code>@dataclass</code> lo genera comparando todos los campos declarados.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W7: tabla de decisión -->
+<section>
+  <div class="wrap">
+    <p class="marker">VIII · ¿Cuándo usar qué?</p>
+    <p class="lead">Tres herramientas.<br>Cada una, su <em>momento.</em></p>
+    <p class="subtle">No todo necesita <span class="inlinecode">@property</span>, y no todo es <span class="inlinecode">@dataclass</span>. La guía rápida para decidir:</p>
+    <div class="widget" data-tag="Guía de decisión">
+      <div class="dt-wrap">
+        <table class="dt-table">
+          <thead>
+            <tr>
+              <th>Herramienta</th>
+              <th>Úsala cuando</th>
+              <th>Evítala cuando</th>
+              <th>Ejemplo típico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tool">@property</span><span class="tool-sub">leer con lógica detrás</span></td>
+              <td>El valor se <strong>calcula</strong> o debe <strong>protegerse</strong> al leerse</td>
+              <td>El atributo es simple y público, sin lógica</td>
+              <td><span class="ex">nombre_completo</span><br>token enmascarado</td>
+            </tr>
+            <tr>
+              <td><span class="tool">@x.setter</span><span class="tool-sub">validar al asignar</span></td>
+              <td>Necesitas <strong>validar</strong> o transformar antes de guardar</td>
+              <td>No hay nada que validar: un atributo normal basta</td>
+              <td><span class="ex">edad</span> (0-120)<br>token no vacío</td>
+            </tr>
+            <tr>
+              <td><span class="tool">@dataclass</span><span class="tool-sub">generar dunders por ti</span></td>
+              <td>La clase es sobre todo para <strong>guardar datos</strong></td>
+              <td>La clase tiene mucha lógica o comportamiento</td>
+              <td><span class="ex">Punto</span>, Config<br>registros, DTOs</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CIERRE -->
+<section class="cierre">
+  <div class="wrap-n">
+    <p class="marker">IX · Para la próxima clase</p>
+    <p class="lead">Construiste una clase profesional <em>completa.</em><br>Y de paso, repasaste toda la unidad 1.</p>
+    <div class="tarea">
+      <div class="tarea-tag">Tarea · sube a tu repo</div>
+      <ol>
+        <li>Crea tu propia clase <code>ClienteAPI</code> con: constructor que recibe el token, atributo <strong>privado</strong> <code>_token</code>, <strong>getter</strong> que lo enmascara y <strong>setter</strong> que lo valida.</li>
+        <li>Agrega un método <code>enviar(prompt)</code> que <strong>valide</strong> que el prompt no esté vacío y devuelva una respuesta simulada.</li>
+        <li>Crea un objeto y prueba: imprime el token (debe salir enmascarado), intenta poner un token inválido (debe fallar), y manda un prompt.</li>
+        <li>En un comentario, escribe <strong>qué concepto del temario</strong> repasa cada parte de tu clase.</li>
+        <li>Commit y push. <em>La conexión real al modelo: Semana 13.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-meta">Programación Avanzada · MCT158 · Carlos D. Vaca Ramírez · Unitec Atizapán 2026-3</div>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';});
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('section>.wrap,section>.wrap-n').forEach(el=>{el.classList.add('reveal');obs.observe(el);});
+const $=id=>document.getElementById(id);
+const L=html=>'<span class="ln">'+html+'</span>';
+
+// ─── W1: token peligro ──────────────────────────────────────
+const TOKEN='sk-proj-aB3x9KdM2nP8zQ7w';
+const tokStates={
+  sin:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">ClienteAPI</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, token):',
+      '        <span class="self">self</span>.token = token  <span class="cm"># sin proteger</span>',
+    ],
+    out:TOKEN, outCls:'danger',
+    verdict:'⚠ Tu credencial completa, expuesta a quien sea.', vCls:'danger'
+  },
+  con:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">ClienteAPI</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, token):',
+      '        <span class="self">self</span>._token = token  <span class="cm"># privado</span>',
+      '',
+      '    <span class="deco">@property</span>',
+      '    <span class="kw">def</span> token(<span class="self">self</span>):',
+      '        <span class="kw">return</span> <span class="self">self</span>._token[:7] + <span class="str">"..."</span> + <span class="self">self</span>._token[-4:]',
+    ],
+    out:TOKEN.slice(0,7)+'...'+TOKEN.slice(-4), outCls:'safe',
+    verdict:'✓ Solo una pista. El secreto queda guardado.', vCls:'safe'
+  }
+};
+function tokRender(state){
+  const s=tokStates[state];
+  $('tok-code').innerHTML=s.code.map(L).join('');
+  $('tok-out').textContent=s.out;
+  $('tok-out').className='tok-out '+s.outCls;
+  $('tok-verdict').textContent=s.verdict;
+  $('tok-verdict').className='tok-verdict '+s.vCls;
+}
+$('tok-sin').addEventListener('click',()=>{$('tok-sin').classList.add('on');$('tok-con').classList.remove('on');tokRender('sin');});
+$('tok-con').addEventListener('click',()=>{$('tok-con').classList.add('on');$('tok-sin').classList.remove('on');tokRender('con');});
+tokRender('sin');
+
+// ─── W2: stepper ────────────────────────────────────────────
+const steps=[
+  {
+    tema:'Ref. 1.4 · Constructores',
+    title:'La API <em>nace</em> con su token',
+    desc:'El <code>__init__</code> recibe el token al crear el objeto. Sin token, no hay cliente que valga.',
+    code:[
+      ['<span class="kw">class</span> <span class="cls">ClienteAPI</span>:',1],
+      ['    <span class="kw">def</span> __init__(<span class="self">self</span>, token):',1],
+      ['        <span class="self">self</span>.token = token',1],
+    ]
+  },
+  {
+    tema:'Ref. 1.3 · Encapsulamiento',
+    title:'El token es un <em>secreto</em>',
+    desc:'Lo guardamos como <code>_token</code> — el guion bajo dice "esto es interno, no lo toques desde fuera".',
+    code:[
+      ['<span class="kw">class</span> <span class="cls">ClienteAPI</span>:',0],
+      ['    <span class="kw">def</span> __init__(<span class="self">self</span>, token):',0],
+      ['        <span class="self">self</span>._token = token  <span class="cm"># ahora privado</span>',1],
+    ]
+  },
+  {
+    tema:'Ref. 1.4.2 · Getter con @property',
+    title:'El getter <em>enmascara</em>',
+    desc:'<code>@property</code> hace que <code>token</code> se use como atributo, pero devuelve el secreto <strong>enmascarado</strong>. Nunca el completo.',
+    code:[
+      ['<span class="kw">class</span> <span class="cls">ClienteAPI</span>:',0],
+      ['    <span class="kw">def</span> __init__(<span class="self">self</span>, token):',0],
+      ['        <span class="self">self</span>._token = token',0],
+      ['',0],
+      ['    <span class="deco">@property</span>',1],
+      ['    <span class="kw">def</span> token(<span class="self">self</span>):',1],
+      ['        <span class="kw">return</span> <span class="self">self</span>._token[:7] + <span class="str">"..."</span> + <span class="self">self</span>._token[-4:]',1],
+    ]
+  },
+  {
+    tema:'Ref. 1.4.3 · Setter con validación',
+    title:'El setter <em>vigila</em>',
+    desc:'El <code>@token.setter</code> rechaza tokens vacíos o muy cortos. Y fíjate: el constructor ahora hace <code>self.token = token</code> — <strong>delega la validación al setter</strong>.',
+    code:[
+      ['<span class="kw">class</span> <span class="cls">ClienteAPI</span>:',0],
+      ['    <span class="kw">def</span> __init__(<span class="self">self</span>, token):',0],
+      ['        <span class="self">self</span>.token = token  <span class="cm"># delega al setter</span>',1],
+      ['',0],
+      ['    <span class="deco">@property</span>',0],
+      ['    <span class="kw">def</span> token(<span class="self">self</span>):',0],
+      ['        <span class="kw">return</span> <span class="self">self</span>._token[:7] + <span class="str">"..."</span> + <span class="self">self</span>._token[-4:]',0],
+      ['',0],
+      ['    <span class="deco">@token.setter</span>',1],
+      ['    <span class="kw">def</span> token(<span class="self">self</span>, valor):',1],
+      ['        <span class="kw">if</span> <span class="kw">not</span> valor <span class="kw">or</span> <span class="kw">len</span>(valor) &lt; 10:',1],
+      ['            <span class="kw">raise</span> ValueError(<span class="str">"Token inválido"</span>)',1],
+      ['        <span class="self">self</span>._token = valor',1],
+    ]
+  },
+];
+let stepIdx=0;
+function stepRender(){
+  const s=steps[stepIdx];
+  $('step-code').innerHTML=s.code.map(([html,isNew])=>'<span class="ln'+(isNew?' new':'')+'">'+html+'</span>').join('');
+  $('step-tema').textContent=s.tema;
+  $('step-title').innerHTML=s.title;
+  $('step-desc').innerHTML=s.desc;
+  $('step-dots').innerHTML=steps.map((_,i)=>'<span class="step-dot'+(i===stepIdx?' on':'')+'"></span>').join('');
+  $('step-prev').classList.toggle('on',stepIdx>0);
+  $('step-next').classList.toggle('on',stepIdx<steps.length-1);
+}
+$('step-next').addEventListener('click',()=>{if(stepIdx<steps.length-1){stepIdx++;stepRender();}});
+$('step-prev').addEventListener('click',()=>{if(stepIdx>0){stepIdx--;stepRender();}});
+stepRender();
+
+// ─── W3: enviar ─────────────────────────────────────────────
+$('snd-code').innerHTML=[
+  '    <span class="kw">def</span> enviar(<span class="self">self</span>, prompt):',
+  '        <span class="kw">if</span> <span class="kw">not</span> prompt.strip():',
+  '            <span class="kw">raise</span> ValueError(',
+  '                <span class="str">"El prompt no puede estar vacío"</span>)',
+  '',
+  '        <span class="cm"># La llamada real al LLM:</span>',
+  '        <span class="cm"># → Semana 13</span>',
+  '        <span class="kw">return</span> <span class="str">f"[respuesta simulada a: {prompt}]"</span>',
+].map(L).join('');
+function sndRun(prompt){
+  const out=$('snd-out');
+  if(!prompt || !prompt.trim()){
+    out.className='snd-out err';
+    out.textContent='✗ ValueError: El prompt no puede estar vacío';
+  }else{
+    out.className='snd-out';
+    out.textContent='[respuesta simulada a: '+prompt.trim()+']';
+  }
+}
+$('snd-run').addEventListener('click',()=>sndRun($('snd-input').value));
+$('snd-empty').addEventListener('click',()=>{$('snd-input').value='';sndRun('');});
+sndRun($('snd-input').value);
+
+// ─── W4: repaso anatómico ───────────────────────────────────
+const revData={
+  init:{tema:'Ref. 1.4 · Constructores',title:'El constructor',desc:'<strong>__init__</strong> se ejecuta al crear el objeto. Aquí la API recibe su token de entrada.'},
+  encap:{tema:'Ref. 1.3 · Encapsulamiento',title:'El secreto privado',desc:'<strong>self._token</strong> con guion bajo: convención de "interno". Nadie debería leerlo directo desde fuera.'},
+  getter:{tema:'Ref. 1.4.2 · Getter',title:'@property',desc:'Convierte <strong>token</strong> en algo que se usa como atributo pero devuelve el secreto enmascarado. Parece atributo, actúa como método.'},
+  setter:{tema:'Ref. 1.4.3 · Setter',title:'@token.setter',desc:'Valida antes de guardar. Rechaza tokens vacíos o muy cortos. El <strong>guardia</strong> de la credencial.'},
+  metodo:{tema:'Ref. 1.2.3 · Métodos',title:'El método enviar',desc:'Lo que el objeto sabe <strong>hacer</strong>. Hoy simula; en la Semana 13 hará la llamada HTTP real al modelo.'},
+};
+document.querySelectorAll('#rev-code .t').forEach(tok=>{
+  tok.addEventListener('click',()=>{
+    document.querySelectorAll('#rev-code .t').forEach(x=>x.classList.remove('active'));
+    tok.classList.add('active');
+    const d=revData[tok.dataset.r];
+    $('rev-tema').textContent=d.tema;
+    $('rev-title').textContent=d.title;
+    $('rev-desc').innerHTML=d.desc;
+  });
+});
+// ─── W5: Constructores ──────────────────────────────────────
+const ctorPanes={
+  sin:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">Punto</span>:',
+      '    <span class="kw">pass</span>          <span class="cm"># sin constructor</span>',
+      '',
+      'p = Punto()       <span class="cm"># ✓ funciona</span>',
+      'p.x = 3           <span class="cm"># atributos después</span>',
+      'p.y = 5',
+    ],
+    note:'Python te da un <strong>constructor vacío gratis</strong>. El objeto nace sin atributos; se los agregas después. Útil para contenedores simples — pero frágil: nada garantiza que <code>x</code> e <code>y</code> existan.'
+  },
+  con:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">Punto</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, x, y):',
+      '        <span class="self">self</span>.x = x',
+      '        <span class="self">self</span>.y = y',
+      '',
+      'p = Punto(3, 5)   <span class="cm"># x e y obligatorios</span>',
+    ],
+    note:'El <strong>constructor normal</strong>. Los argumentos son obligatorios: <code>Punto()</code> falla. Garantiza que todo objeto nace completo y válido.'
+  },
+  defaults:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">Punto</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, x=0, y=0):',
+      '        <span class="self">self</span>.x = x',
+      '        <span class="self">self</span>.y = y',
+      '',
+      'Punto()        <span class="cm"># (0, 0)</span>',
+      'Punto(3)       <span class="cm"># (3, 0)</span>',
+      'Punto(3, 5)    <span class="cm"># (3, 5)</span>',
+    ],
+    note:'Un <strong>solo constructor</strong> que acepta 0, 1 o 2 argumentos. Los valores default cubren lo que en Java harías con <em>sobrecarga</em> — para los casos simples.'
+  },
+  factory:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">Punto</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, x, y):',
+      '        <span class="self">self</span>.x = x',
+      '        <span class="self">self</span>.y = y',
+      '',
+      '    <span class="deco">@classmethod</span>',
+      '    <span class="kw">def</span> desde_tupla(cls, t):',
+      '        <span class="kw">return</span> cls(t[0], t[1])',
+      '',
+      '    <span class="deco">@classmethod</span>',
+      '    <span class="kw">def</span> origen(cls):',
+      '        <span class="kw">return</span> cls(0, 0)',
+      '',
+      'Punto(3, 5)               <span class="cm"># normal</span>',
+      'Punto.desde_tupla((3,5))  <span class="cm"># otra forma</span>',
+      'Punto.origen()            <span class="cm"># otra forma</span>',
+    ],
+    note:'La forma <strong>pythónica de "sobrecargar"</strong>: constructores alternos con <code>@classmethod</code>. Cada uno crea el objeto de forma distinta. <code>cls</code> es la clase misma — por eso <code>cls(...)</code> equivale a llamar al constructor.'
+  }
+};
+function ctorRender(key){
+  const p=ctorPanes[key];
+  $('ctor-code').innerHTML=p.code.map(L).join('');
+  $('ctor-note').innerHTML=p.note;
+}
+document.querySelectorAll('[data-ctor]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-ctor]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    ctorRender(b.dataset.ctor);
+  });
+});
+ctorRender('sin');
+
+// ─── W6: dataclass ──────────────────────────────────────────
+const dcStates={
+  sin:{
+    code:[
+      '<span class="kw">class</span> <span class="cls">Punto</span>:',
+      '    <span class="kw">def</span> __init__(<span class="self">self</span>, x, y):',
+      '        <span class="self">self</span>.x = x',
+      '        <span class="self">self</span>.y = y',
+      '',
+      '    <span class="kw">def</span> __repr__(<span class="self">self</span>):',
+      '        <span class="kw">return</span> <span class="str">f"Punto(x={self.x}, y={self.y})"</span>',
+      '',
+      '    <span class="kw">def</span> __eq__(<span class="self">self</span>, otro):',
+      '        <span class="kw">return</span> (<span class="self">self</span>.x, <span class="self">self</span>.y) == (otro.x, otro.y)',
+    ],
+    result:'<strong>10 líneas escritas a mano.</strong> Tú defines <code>__init__</code>, <code>__repr__</code> y <code>__eq__</code> uno por uno. Funciona — pero es repetitivo y fácil de equivocar.'
+  },
+  con:{
+    code:[
+      '<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass',
+      '',
+      '<span class="deco">@dataclass</span>',
+      '<span class="kw">class</span> <span class="cls">Punto</span>:',
+      '    x: <span class="ty">int</span>',
+      '    y: <span class="ty">int</span>',
+    ],
+    result:'<strong>4 líneas. Mismo resultado.</strong> <code>@dataclass</code> genera <code>__init__</code>, <code>__repr__</code> y <code>__eq__</code> automáticamente, a partir de los campos que declaras con sus tipos.'
+  }
+};
+function dcRender(state){
+  const s=dcStates[state];
+  $('dc-code').innerHTML=s.code.map(L).join('');
+  $('dc-result').innerHTML=s.result;
+}
+$('dc-sin').addEventListener('click',()=>{$('dc-sin').classList.add('on');$('dc-con').classList.remove('on');dcRender('sin');});
+$('dc-con').addEventListener('click',()=>{$('dc-con').classList.add('on');$('dc-sin').classList.remove('on');dcRender('con');});
+dcRender('sin');
+</script>
+</body>
+</html>
