@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión VII — Todo dato tiene tipo — Programación Avanzada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EFE6D2;--paper-deep:#E6DBC2;--ink:#2A1D14;--ink-soft:#4A3A2C;--blood:#A02418;--blood-dark:#6E1810;--ochre:#B5852A;--olive:#5D6638;--line:rgba(42,29,20,.18);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:'Crimson Pro',Georgia,serif;font-size:18px;line-height:1.6;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.11 0 0 0 0 0.08 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.35' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.13 0 0 0 0 0.08 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;mix-blend-mode:multiply;}
+
+.course-nav{position:sticky;top:0;z-index:999;background:rgba(239,230,210,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;}
+.course-nav a{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:var(--ink-soft);transition:color .2s;}
+.course-nav a:hover{color:var(--blood);}
+.course-nav a.back::before{content:'← ';color:var(--blood);}
+.course-nav a.next::after{content:' →';color:var(--blood);}
+.course-nav .session-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(42,29,20,.4);}
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--blood);z-index:1001;width:0;}
+
+section{position:relative;padding:5rem 2rem;}
+.wrap{max-width:1080px;margin:0 auto;}
+.wrap-n{max-width:720px;margin:0 auto;}
+.marker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--blood);margin-bottom:1rem;display:flex;align-items:center;gap:1rem;}
+.marker::after{content:'';flex:1;height:1px;background:var(--line);}
+
+/* Hero */
+.hero{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:4rem 2rem;overflow:hidden;position:relative;}
+.hero-float{position:absolute;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--blood);opacity:.13;letter-spacing:.05em;pointer-events:none;white-space:nowrap;animation:floaty 14s ease-in-out infinite;}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(var(--r,0deg));}50%{transform:translateY(-22px) rotate(var(--r,0deg));}}
+.hero-inner{position:relative;z-index:2;max-width:1080px;margin:0 auto;width:100%;}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(42,29,20,.5);margin-bottom:1.5rem;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(2.8rem,7.5vw,6.5rem);line-height:.98;letter-spacing:-.03em;color:var(--ink);}
+.hero h1 em{font-style:italic;color:var(--blood);}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.2rem,2.5vw,1.8rem);color:var(--ink-soft);margin-top:1.5rem;max-width:650px;}
+
+.lead{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:500;line-height:1.25;letter-spacing:-.01em;color:var(--ink);}
+.lead em{font-style:italic;color:var(--blood);}
+.subtle{font-size:1.05rem;color:var(--ink-soft);margin-top:1rem;max-width:660px;}
+.inlinecode{font-family:'JetBrains Mono',monospace;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);font-size:.85rem;}
+
+.widget{background:var(--paper-deep);border:1px solid var(--line);border-left:3px solid var(--blood);padding:2.2rem;margin-top:2.5rem;position:relative;}
+.widget::before{content:attr(data-tag);position:absolute;top:-.7rem;left:1.8rem;background:var(--paper);padding:0 .9rem;font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.25em;text-transform:uppercase;color:var(--blood);}
+.w-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;padding:.6rem 1rem;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.btn:hover{border-color:var(--blood);color:var(--blood);}
+.btn.on{background:var(--blood);color:var(--paper);border-color:var(--blood);}
+.btn-olive.on{background:var(--olive);border-color:var(--olive);}
+
+.dark-code{background:var(--ink);padding:1.4rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.9;color:var(--paper);}
+.dark-code .ln{white-space:pre;display:block;}
+.dark-code .kw{color:#D4956A;font-style:italic;}
+.dark-code .self{color:#8EAF8B;font-weight:700;}
+.dark-code .str{color:#C9A961;}
+.dark-code .num{color:#A6C2D6;}
+.dark-code .cm{color:rgba(239,230,210,.45);font-style:italic;}
+.dark-code .err{color:#E08A82;font-weight:700;}
+.dark-code .ty{color:#A6C2D6;}
+
+/* ─── W1: dinámico vs estático ────────────────── */
+.dyn-stage{display:grid;grid-template-columns:1.1fr 1fr;gap:1.5rem;align-items:stretch;}
+.dyn-code{min-height:240px;}
+.dyn-note{background:var(--paper);border:1px solid var(--line);padding:1.5rem;display:flex;flex-direction:column;justify-content:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.18rem;line-height:1.5;color:var(--ink-soft);}
+.dyn-note strong{color:var(--ink);font-style:normal;font-weight:600;}
+.dyn-note .big{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--blood);display:block;margin-top:1rem;}
+
+/* ─── W2: inspector de tipos ──────────────────── */
+.ti-stage{display:grid;grid-template-columns:1fr 1.1fr;gap:1.5rem;align-items:start;}
+.ti-chips{display:flex;flex-wrap:wrap;gap:.5rem;align-content:flex-start;}
+.ti-chip{font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:.55rem .85rem;background:var(--paper);border:1px solid var(--line);color:var(--ink);cursor:pointer;transition:all .2s;}
+.ti-chip:hover{border-color:var(--blood);color:var(--blood);}
+.ti-chip.on{background:var(--blood);color:var(--paper);border-color:var(--blood);}
+.ti-panel{background:var(--ink);padding:1.5rem;min-height:200px;display:flex;flex-direction:column;gap:.9rem;}
+.ti-cmd{font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--paper);}
+.ti-cmd::before{content:'>>> ';color:#8EAF8B;}
+.ti-res{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:#C9A961;padding:.5rem .8rem;background:rgba(239,230,210,.06);border-left:2px solid var(--ochre);}
+.ti-note{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.12rem;line-height:1.5;color:rgba(239,230,210,.85);margin-top:auto;}
+.ti-note strong{color:#C9A961;font-style:normal;font-weight:600;}
+
+/* ─── W3: operadores ──────────────────────────── */
+.op-stage{display:grid;grid-template-columns:1fr 1.1fr;gap:1.5rem;align-items:start;}
+.op-chips{display:flex;flex-direction:column;gap:.5rem;}
+.op-chip{font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:.6rem .9rem;background:var(--paper);border:1px solid var(--line);color:var(--ink);cursor:pointer;transition:all .2s;text-align:left;}
+.op-chip:hover{border-color:var(--blood);}
+.op-chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+.op-panel{background:var(--paper);border:1px solid var(--line);padding:1.5rem;min-height:200px;display:flex;flex-direction:column;justify-content:center;}
+.op-expr{font-family:'JetBrains Mono',monospace;font-size:1.3rem;color:var(--ink);}
+.op-arrow{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--blood);font-size:1.1rem;margin:.6rem 0;}
+.op-res{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;}
+.op-res.ok{color:var(--olive);}
+.op-res.err{color:var(--blood);}
+.op-note{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;line-height:1.45;color:var(--ink-soft);margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line);}
+.op-note strong{color:var(--ink);font-style:normal;font-weight:600;}
+
+/* ─── W4: quadrant ────────────────────────────── */
+.quad-cap{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:1rem;text-transform:uppercase;}
+.quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.quad-cell{background:var(--paper);border:1px solid var(--line);padding:1.3rem;min-height:130px;display:flex;flex-direction:column;gap:.7rem;}
+.quad-cell.empty{opacity:.5;justify-content:center;}
+.quad-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ochre);}
+.quad-lang{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--ink);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;text-align:left;padding:.1rem 0;width:fit-content;}
+.quad-lang:hover{color:var(--blood);}
+.quad-lang.on{color:var(--blood);border-bottom-color:var(--blood);font-style:italic;}
+.quad-none{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.95rem;color:rgba(42,29,20,.45);}
+.quad-detail{margin-top:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:stretch;}
+.quad-dcode{min-height:160px;}
+.quad-dnote{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--blood);padding:1.4rem;display:flex;flex-direction:column;justify-content:center;}
+.quad-dtag{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;color:var(--blood);margin-bottom:.6rem;}
+.quad-dtext{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.18rem;line-height:1.5;color:var(--ink-soft);}
+.quad-dtext strong{color:var(--ink);font-style:normal;font-weight:600;}
+
+/* Taller / Cierre */
+.taller{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--olive);padding:2rem;margin-top:2rem;}
+.taller-tag{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--olive);margin-bottom:1rem;}
+.taller-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.3rem;}
+.taller-step{background:var(--paper-deep);border:1px solid var(--line);padding:1.2rem;}
+.taller-step-n{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.8rem;color:var(--blood);line-height:1;margin-bottom:.5rem;}
+.taller-step-t{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--ink);margin-bottom:.3rem;}
+.taller-step-d{font-size:.92rem;color:var(--ink-soft);}
+.taller-step-d em{color:var(--ink);font-style:italic;}
+.cierre{background:var(--paper-deep);}
+.tarea{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--ochre);padding:2rem;margin-top:2rem;}
+.tarea-tag{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--ochre);margin-bottom:1rem;}
+.tarea ol{margin-left:1.3rem;color:var(--ink-soft);}
+.tarea li{padding:.4rem 0;font-size:1.05rem;}
+.tarea li strong{color:var(--ink);}
+.tarea code{font-family:'JetBrains Mono',monospace;font-size:.85rem;background:var(--paper-deep);padding:.1rem .4rem;border:1px solid var(--line);color:var(--blood);}
+
+footer{padding:3rem 2rem;border-top:1px solid var(--line);text-align:center;}
+.foot-meta{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(42,29,20,.4);}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:860px){
+  section{padding:3.5rem 1.2rem;}
+  .dyn-stage,.ti-stage,.op-stage,.quad-grid,.quad-detail{grid-template-columns:1fr;}
+  .taller-steps{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<nav class="course-nav">
+  <a href="sesion-06.html" class="back">Sesión 06</a>
+  <span class="session-label">Sesión 07 · 10.06.2026</span>
+  <a href="../index.html" class="next">Curso</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-float" style="top:14%;left:9%;--r:-4deg">x = 5</div>
+  <div class="hero-float" style="top:28%;right:11%;--r:3deg;animation-delay:-3s">type(x)</div>
+  <div class="hero-float" style="bottom:32%;left:13%;--r:2deg;animation-delay:-6s">7 // 2 == 3</div>
+  <div class="hero-float" style="bottom:18%;right:14%;--r:-3deg;animation-delay:-9s">"5" + 3  # TypeError</div>
+  <div class="hero-float" style="top:50%;left:42%;--r:1deg;animation-delay:-4.5s">int x = 5;</div>
+  <div class="hero-inner">
+    <div class="hero-label">Sesión VII · Tipos y operadores · Ref. Temario 2.1 – 2.5</div>
+    <h1>Todo dato<br>tiene un <em>tipo.</em></h1>
+    <p class="hero-sub">Aunque Python no te obligue a declararlo, el tipo siempre está ahí — y decide qué puedes hacer con cada dato. Cada lenguaje lo maneja con una <em>filosofía distinta</em>.</p>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section>
+  <div class="wrap-n">
+    <p class="marker">I · El tipo manda</p>
+    <p class="lead">No declaras tipos en Python.<br>Pero eso <em>no significa</em> que no existan.</p>
+    <p class="subtle">El tipo de un dato decide qué operaciones son válidas: puedes sumar dos <span class="inlinecode">int</span>, pero no un <span class="inlinecode">str</span> y un <span class="inlinecode">int</span>. Hoy vemos los tipos básicos, cómo Python los maneja de forma <em>dinámica</em>, los operadores que sorprenden, y cómo cuatro lenguajes piensan los tipos de maneras opuestas.</p>
+  </div>
+</section>
+
+<!-- W1: dinámico vs estático -->
+<section>
+  <div class="wrap">
+    <p class="marker">II · ¿Dónde vive el tipo?</p>
+    <p class="lead">En Python, el tipo vive en el <em>valor.</em><br>En Java, vive en la <em>variable.</em></p>
+    <p class="subtle">Esa diferencia lo cambia todo. En Python una variable puede apuntar a un <span class="inlinecode">int</span> y luego a un <span class="inlinecode">str</span>. En Java, jamás. Compara:</p>
+    <div class="widget" data-tag="Dinámico vs estático">
+      <div class="dyn-stage">
+        <div class="dyn-code dark-code" id="dyn-code"></div>
+        <div class="dyn-note" id="dyn-note"></div>
+      </div>
+      <div class="w-controls">
+        <button class="btn on" id="dyn-py">Python · dinámico</button>
+        <button class="btn" id="dyn-java">Java · estático</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W2: inspector de tipos -->
+<section>
+  <div class="wrap">
+    <p class="marker">III · Los tipos básicos de Python</p>
+    <p class="lead">Ocho tipos que verás <em>todos los días.</em></p>
+    <p class="subtle">La función <span class="inlinecode">type()</span> revela el tipo de cualquier valor. Toca cada uno y descúbrelo:</p>
+    <div class="widget" data-tag="Toca un valor">
+      <div class="ti-stage">
+        <div class="ti-chips" id="ti-chips"></div>
+        <div class="ti-panel">
+          <div class="ti-cmd" id="ti-cmd"></div>
+          <div class="ti-res" id="ti-res"></div>
+          <div class="ti-note" id="ti-note"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W3: operadores -->
+<section>
+  <div class="wrap">
+    <p class="marker">IV · Operadores que <em style="font-style:italic">sorprenden</em></p>
+    <p class="lead">Algunos operadores hacen<br>cosas que <em>no esperas.</em></p>
+    <p class="subtle">Antes de tocar cada uno, intenta adivinar el resultado. Luego compruébalo:</p>
+    <div class="widget" data-tag="Adivina, luego comprueba">
+      <div class="op-stage">
+        <div class="op-chips" id="op-chips"></div>
+        <div class="op-panel">
+          <div class="op-expr" id="op-expr"></div>
+          <div class="op-arrow">↓ devuelve</div>
+          <div class="op-res ok" id="op-res"></div>
+          <div class="op-note" id="op-note"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- W4: quadrant -->
+<section>
+  <div class="wrap">
+    <p class="marker">V · Cuatro lenguajes, cuatro filosofías</p>
+    <p class="lead">Cada lenguaje decide dos cosas:<br>¿declaras el tipo? ¿hace <em>coerción?</em></p>
+    <p class="subtle">Esas dos preguntas forman cuatro cuadrantes. Toca un lenguaje y mira dónde cae y por qué:</p>
+    <div class="widget" data-tag="El mapa de los tipos">
+      <div class="quad-cap">Horizontal: ¿declaras el tipo? &nbsp;·&nbsp; Vertical: ¿hace coerción automática?</div>
+      <div class="quad-grid">
+        <div class="quad-cell">
+          <div class="quad-label">dinámico + fuerte</div>
+          <button class="quad-lang on" data-lang="python">Python</button>
+        </div>
+        <div class="quad-cell">
+          <div class="quad-label">estático + fuerte</div>
+          <button class="quad-lang" data-lang="java">Java</button>
+          <button class="quad-lang" data-lang="go">Go</button>
+        </div>
+        <div class="quad-cell">
+          <div class="quad-label">dinámico + débil</div>
+          <button class="quad-lang" data-lang="js">JavaScript</button>
+        </div>
+        <div class="quad-cell empty">
+          <div class="quad-label">estático + débil</div>
+          <span class="quad-none">(C clásico — fuera de este curso)</span>
+        </div>
+      </div>
+      <div class="quad-detail">
+        <div class="quad-dcode dark-code" id="quad-code"></div>
+        <div class="quad-dnote">
+          <div class="quad-dtag" id="quad-tag"></div>
+          <div class="quad-dtext" id="quad-text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TALLER -->
+<section>
+  <div class="wrap">
+    <p class="marker">VI · Taller · en clase</p>
+    <p class="lead">Predice. Comprueba.<br>Y dale <em>tipos</em> a tu proyecto.</p>
+    <div class="taller">
+      <div class="taller-tag">Manos al teclado · 30 min</div>
+      <div class="taller-steps">
+        <div class="taller-step">
+          <div class="taller-step-n">1</div>
+          <div class="taller-step-t">Predice</div>
+          <div class="taller-step-d">Antes de correr nada, escribe en papel el resultado de 6 expresiones: <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">7//2</code>, <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">True+True</code>, <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">"ab"*3</code>...</div>
+        </div>
+        <div class="taller-step">
+          <div class="taller-step-n">2</div>
+          <div class="taller-step-t">Comprueba</div>
+          <div class="taller-step-d">Córrelas en Python. ¿Acertaste? Las que fallaste son <em>las que más enseñan</em>. Anota por qué.</div>
+        </div>
+        <div class="taller-step">
+          <div class="taller-step-n">3</div>
+          <div class="taller-step-t">Type hints</div>
+          <div class="taller-step-d">Agrega <em>type hints</em> a los métodos de tu clase del proyecto: <code style="font-family:'JetBrains Mono',monospace;color:var(--blood)">def agregar(self, item: str) -> None</code>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CIERRE -->
+<section class="cierre">
+  <div class="wrap-n">
+    <p class="marker">VII · Para la próxima clase</p>
+    <p class="lead">Python no te obliga a pensar en tipos.<br>Los buenos programadores <em>lo hacen igual.</em></p>
+    <div class="tarea">
+      <div class="tarea-tag">Tarea · sube a tu repo</div>
+      <ol>
+        <li>Crea un archivo <code>tipos.py</code> donde uses los <strong>8 tipos básicos</strong> (int, float, str, bool, list, dict, tuple, None) en variables con nombres claros.</li>
+        <li>Escribe <strong>5 expresiones con operadores</strong> que te hayan sorprendido, cada una con un comentario explicando el resultado.</li>
+        <li>Agrega <strong>type hints</strong> a todos los métodos de tu clase principal del proyecto.</li>
+        <li>En un comentario: <strong>¿por qué crees que Python no obliga a declarar tipos, pero sí permite los hints?</strong></li>
+        <li>Commit y push. La próxima clase: control de flujo — <code>if</code>, <code>for</code>, <code>while</code>.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-meta">Programación Avanzada · MCT158 · Carlos D. Vaca Ramírez · Unitec Atizapán 2026-3</div>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';});
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('section>.wrap,section>.wrap-n').forEach(el=>{el.classList.add('reveal');obs.observe(el);});
+const $=id=>document.getElementById(id);
+const L=html=>'<span class="ln">'+html+'</span>';
+
+// ─── W1: dinámico vs estático ───────────────────────────────
+const dynStates={
+  py:{
+    code:[
+      'x = <span class="num">5</span>            <span class="cm"># x apunta a un int</span>',
+      'x = <span class="str">"hola"</span>       <span class="cm"># ahora a un str — OK</span>',
+      'x = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]    <span class="cm"># ahora a una lista — OK</span>',
+      '',
+      '<span class="kw">print</span>(type(x))   <span class="cm"># &lt;class \'list\'&gt;</span>',
+    ],
+    note:'El tipo vive en el <strong>valor</strong>, no en la variable. La variable es solo una <strong>etiqueta</strong> que puedes mover a cualquier cosa.<span class="big">Tipado dinámico</span>'
+  },
+  java:{
+    code:[
+      '<span class="ty">int</span> x = <span class="num">5</span>;       <span class="cm"># x es int, declarado</span>',
+      'x = <span class="str">"hola"</span>;      <span class="err"># ✗ error de compilación</span>',
+      '                 <span class="cm"># incompatible types</span>',
+      '                 <span class="cm"># el compilador lo rechaza</span>',
+      '                 <span class="cm"># antes de correr</span>',
+    ],
+    note:'El tipo vive en la <strong>variable</strong>. La declaras <code style="font-family:JetBrains Mono;font-style:normal">int</code> y será int para siempre. El compilador lo verifica antes de ejecutar.<span class="big">Tipado estático</span>'
+  }
+};
+function dynRender(s){
+  $('dyn-code').innerHTML=dynStates[s].code.map(L).join('');
+  $('dyn-note').innerHTML=dynStates[s].note;
+}
+$('dyn-py').addEventListener('click',()=>{$('dyn-py').classList.add('on');$('dyn-java').classList.remove('on');dynRender('py');});
+$('dyn-java').addEventListener('click',()=>{$('dyn-java').classList.add('on');$('dyn-py').classList.remove('on');dynRender('java');});
+dynRender('py');
+
+// ─── W2: inspector de tipos ─────────────────────────────────
+const tipos=[
+  ['42',"&lt;class 'int'&gt;",'<strong>Entero.</strong> En Python no tiene límite de tamaño — puedes calcular números gigantes sin desbordar, a diferencia de Java.'],
+  ['3.14',"&lt;class 'float'&gt;",'<strong>Punto flotante</strong> de doble precisión. Cuidado: <code>0.1 + 0.2</code> no da exactamente 0.3 (es la naturaleza del flotante).'],
+  ['"hola"',"&lt;class 'str'&gt;",'<strong>Texto.</strong> En Python no existe el tipo <em>char</em>: un solo carácter es un <code>str</code> de longitud 1.'],
+  ['True',"&lt;class 'bool'&gt;",'<strong>Booleano.</strong> Curiosamente, <code>bool</code> es subclase de <code>int</code>: <code>True</code> vale 1 y <code>False</code> vale 0.'],
+  ['[1, 2, 3]',"&lt;class 'list'&gt;",'<strong>Lista:</strong> mutable y ordenada. Es el "array" de Python — lo verás a fondo en la unidad de arrays.'],
+  ['{"a": 1}',"&lt;class 'dict'&gt;",'<strong>Diccionario:</strong> pares clave-valor. La estructura más usada en Python para datos.'],
+  ['(1, 2)',"&lt;class 'tuple'&gt;",'<strong>Tupla:</strong> como una lista, pero <em>inmutable</em>. No se puede modificar después de crearla.'],
+  ['None',"&lt;class 'NoneType'&gt;",'<strong>La ausencia de valor.</strong> El <code>null</code> de Python. Lo devuelve una función que no retorna nada.'],
+];
+$('ti-chips').innerHTML=tipos.map((t,i)=>'<button class="ti-chip'+(i===0?' on':'')+'" data-i="'+i+'">'+t[0]+'</button>').join('');
+function tiRender(i){
+  const t=tipos[i];
+  $('ti-cmd').textContent='type('+t[0]+')';
+  $('ti-res').innerHTML=t[1];
+  $('ti-note').innerHTML=t[2];
+}
+document.querySelectorAll('.ti-chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('.ti-chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+    tiRender(+c.dataset.i);
+  });
+});
+tiRender(0);
+
+// ─── W3: operadores ─────────────────────────────────────────
+const ops=[
+  ['7 / 2','3.5','ok','La división <code>/</code> <strong>siempre da float</strong> en Python 3, aunque divida exacto. <code>4 / 2</code> da <code>2.0</code>, no <code>2</code>.'],
+  ['7 // 2','3','ok','División <strong>entera</strong> (floor): trunca hacia abajo. Útil cuando quieres un entero sin decimales.'],
+  ['7 % 2','1','ok','<strong>Módulo:</strong> el residuo de la división. <code>n % 2 == 0</code> es la forma clásica de saber si <code>n</code> es par.'],
+  ['2 ** 10','1024','ok','<strong>Potencia.</strong> En muchos lenguajes necesitas una función; en Python es un operador: 2 elevado a 10.'],
+  ['"ab" * 3','"ababab"','ok','El <code>*</code> con un string lo <strong>repite</strong>. Truco útil: <code>"-" * 20</code> hace una línea separadora.'],
+  ['True + True','2','ok','Como <code>bool</code> es <code>int</code> por debajo, <code>True + True</code> es <code>1 + 1 = 2</code>. Sirve para contar condiciones verdaderas.'],
+  ['"5" + 3','TypeError','err','Python <strong>NO mezcla</strong> str e int. Esto que en JavaScript daría <code>"53"</code>, aquí es un error — y eso es bueno: te obliga a ser explícito.'],
+  ['10 == 10.0','True','ok','El <code>==</code> compara el <strong>valor</strong>, no el tipo. Un <code>int</code> y un <code>float</code> con el mismo valor son iguales.'],
+];
+$('op-chips').innerHTML=ops.map((o,i)=>'<button class="op-chip'+(i===0?' on':'')+'" data-i="'+i+'">'+o[0]+'</button>').join('');
+function opRender(i){
+  const o=ops[i];
+  $('op-expr').textContent=o[0];
+  $('op-res').textContent=o[1];
+  $('op-res').className='op-res '+o[2];
+  $('op-note').innerHTML=o[3];
+}
+document.querySelectorAll('.op-chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('.op-chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+    opRender(+c.dataset.i);
+  });
+});
+opRender(0);
+
+// ─── W4: quadrant ───────────────────────────────────────────
+const langs={
+  python:{
+    tag:'Python · dinámico + fuerte',
+    code:[
+      'x = <span class="num">5</span>',
+      'x = <span class="str">"hola"</span>   <span class="cm"># permitido</span>',
+      '<span class="str">"5"</span> + <span class="num">3</span>      <span class="err"># TypeError</span>',
+    ],
+    text:'No declaras tipos (se infieren), pero Python <strong>no hace coerción loca</strong>: mezclar str e int es error. Flexible para escribir, estricto para evitar bugs.'
+  },
+  java:{
+    tag:'Java · estático + fuerte',
+    code:[
+      '<span class="ty">int</span> x = <span class="num">5</span>;',
+      '<span class="cm">// x = "hola"; ✗</span>',
+      '<span class="ty">String</span> s = <span class="str">"hola"</span>;',
+    ],
+    text:'Declaras <strong>cada tipo</strong> y no cambia. El compilador te protege antes de ejecutar. Más verboso de escribir, pero atrapa errores temprano.'
+  },
+  js:{
+    tag:'JavaScript · dinámico + débil',
+    code:[
+      '<span class="kw">let</span> x = <span class="num">5</span>;',
+      'x = <span class="str">"hola"</span>;   <span class="cm">// permitido</span>',
+      '<span class="str">"5"</span> + <span class="num">3</span>       <span class="cm">// "53" (!)</span>',
+      '<span class="str">"5"</span> - <span class="num">3</span>       <span class="cm">// 2 (!!)</span>',
+    ],
+    text:'No declaras <em>y</em> hace <strong>coerción agresiva</strong>: convierte tipos como puede para que "funcione". Flexible hasta el caos — fuente de bugs sutiles y difíciles.'
+  },
+  go:{
+    tag:'Go · estático + fuerte (con inferencia)',
+    code:[
+      'x := <span class="num">5</span>        <span class="cm">// infiere int</span>',
+      '<span class="cm">// x = "hola" ✗</span>',
+      's := <span class="str">"hola"</span>   <span class="cm">// infiere string</span>',
+    ],
+    text:'No escribes el tipo (lo <strong>infiere</strong> con <code>:=</code>) pero una vez fijado no cambia. Lo mejor de ambos mundos: conciso como Python, seguro como Java.'
+  }
+};
+function quadRender(key){
+  const l=langs[key];
+  $('quad-code').innerHTML=l.code.map(L).join('');
+  $('quad-tag').textContent=l.tag;
+  $('quad-text').innerHTML=l.text;
+}
+document.querySelectorAll('.quad-lang').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.quad-lang').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    quadRender(b.dataset.lang);
+  });
+});
+quadRender('python');
+</script>
+</body>
+</html>
